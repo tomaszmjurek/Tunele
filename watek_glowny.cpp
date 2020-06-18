@@ -1,7 +1,7 @@
-#include "watek_glowny.h"
 #include "main.h"
-#include "Tunel.cpp"
-#include "windows.h"
+#include "watek_glowny.h"
+#include "tunel.h"
+// #include <windows.h>
 
 int zegar;
 int zapisanyZegar;
@@ -41,17 +41,17 @@ void czekajNaWejscie(kierunki gdzie) {
 void przejdzTunelem(kierunki gdzie) {
     //wyslij inside
     //usun kolejkeDostepu
-    Sleep(100);
+    // Sleep(100);
     //jesli jestes pierwszy return
     //else czekaj az sie zwolni (RELEASE)
     //wyslij RELEASE
 }
 
 void krainaSzczesliwosci() {
-    Sleep(1000);
+    // Sleep(1000);
 }
 
 void dojdzDoSiebie() {
-    Sleep(1000);
+    // Sleep(1000);
 }
 

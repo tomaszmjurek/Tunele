@@ -1,7 +1,7 @@
 #include "main.h"
 #include <string>
 using namespace std;
-// #include "watek_komunikacyjny.h"
+#include "watek_komunikacyjny.h"
 
 volatile int oczekujace;
 bool dontStop = true;

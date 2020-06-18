@@ -1,14 +1,11 @@
 #include "main.h"
+#include "tunel.h"
 
-class Tunel {
-    public:
-        int zajetosc;
-        kierunki kierunek;
-};
-
-typedef enum {tam, zPowrotem, brak } kierunki;
-
-Tunel * tunele;
+// class Tunel {
+//     public:
+//         int zajetosc;
+//         kierunki kierunek;
+// };
 
 /**
  * sprawdza najpiew tunel bazujac na id_procesu,
@@ -23,7 +20,7 @@ int znajdzMiejsceWTunelu(kierunki gdzie) {
             return nrTunelu;
     for (int i = 0; i < LICZBA_TUNELI; i++) {
         nrTunelu = i;
-        if (tunele[nrTunelu].kierunek == brak || tunele[nrTunelu].kierunek == k)
+        if (tunele[nrTunelu].kierunek == brak || tunele[nrTunelu].kierunek == gdzie)
             if (tunele[nrTunelu].zajetosc < POJEMNOSC_TUNELU)
                 return nrTunelu;
     }
