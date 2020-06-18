@@ -16,10 +16,10 @@ typedef enum kierunki {tam, zPowrotem, brak };
 int id_proc; //temp
 int LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP;
 
-#ifdef DEBUG
-#define debug(FORMAT,...) printf("%c[%d;%dm [%d]: " FORMAT "%c[%d;%dm\n",  27, (1+(rank/7))%2, 31+(6+rank)%7, rank, ##__VA_ARGS__, 27,0,37);
-#else
-#define debug(...) ;
-#endif
+// #ifdef DEBUG
+// #define debug(FORMAT,...) printf("%c[%d;%dm [%d]: " FORMAT "%c[%d;%dm\n",  27, (1+(rank/7))%2, 31+(6+rank)%7, rank, ##__VA_ARGS__, 27,0,37);
+// #else
+// #define debug(...) ;
+// #endif
 
 #endif
