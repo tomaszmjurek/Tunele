@@ -5,6 +5,7 @@
 #include <stdlib.h>
 // #include <iostream>
 #include <mpi.h>
+#include <pthread.h>
 
 //#include <pthread.h>
 
