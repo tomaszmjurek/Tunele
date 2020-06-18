@@ -1,12 +1,13 @@
 #include "main.h"
 #include "watek_glowny.h"
 #include "tunel.h"
+#include "watek_komunikacyjny.h"
 #include <unistd.h>
 
 int zegar;
 int zapisanyZegar;
 // int oczekujace;
-kierunki kierunek; //?
+//kierunki_t kierunek; //?
 
 //kolejkaDostepu
 //bool czekaj wspoldzielony z komunikacyjnym

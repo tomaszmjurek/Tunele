@@ -1,6 +1,8 @@
 #include "main.h"
 #include "tunel.h"
 
+Tunel * tunele; /* zmienna globalna */
+
 /**
  * sprawdza najpiew tunel bazujac na id_procesu,
  * aby rozdzielic procesy na wieksza liczbe tuneli
@@ -35,4 +37,11 @@ void usunZTunelu(int nrTunelu, int rozmiarEkipy, kierunki gdzie){
 
     if (tunele[nrTunelu].zajetosc == 0)
         tunele[nrTunelu].kierunek = brak;
+}
+
+void czyscTunele() {
+    for (int i = 0; i < LICZBA_TUNELI; i++) {
+        tunele[i].zajetosc = 0;
+        tunele[i].kierunek = brak;
+    }
 }

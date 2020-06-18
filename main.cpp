@@ -5,10 +5,12 @@
 #include "tunel.h"
 
 using namespace std;
-
-pthread_t threadKom, threadBogacz;
+int id_proc, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
+pthread_t watekKom, watekGlowny;
 
 int main(int argc, char *argv[]) {
+
+    cout << "Started";
     
     if (argc > 0) { // == 5
         LICZBA_TUNELI = atoi(argv[1]);
@@ -21,6 +23,7 @@ int main(int argc, char *argv[]) {
     }
 
     tunele = new Tunel [LICZBA_TUNELI];
+    czyscTunele();
 
     ROZMIAR_EKIPY = rand() % 21 + 10;
     
@@ -29,9 +32,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    pthread_create(&threadKom, NULL, startWatekKom, 0);
+    // pthread_create(&watekKom, NULL, startWatekKom, 0);
+
+    id_proc = 0; //MPI get_id
 
     //tworz watki
 
     return 0;
 }
+
