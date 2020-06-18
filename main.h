@@ -11,7 +11,14 @@
 typedef enum komunikaty {REQ, ACK, INSIDE, RELEASE, STOP};
 typedef enum stany {czekam, zajety};
 typedef enum kierunki {tam, zPowrotem, brak };
-
+struct package{
+    int kierunek;
+    int nr_tunelu;
+    int rozmiar_grupy;
+    int proc_zegar;
+    int proc_id;
+}packet_t
+extern MPI_Datatype MPI_PAKIET_T;
 
 int id_proc; //temp
 int LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP;

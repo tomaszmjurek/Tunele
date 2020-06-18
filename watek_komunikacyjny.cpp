@@ -7,17 +7,22 @@ volatile int oczekujace;
 bool dontStop = true;
 stany stan;
 komunikaty komunikat;
-
+packet_t pakiet;
+MPI_STATUS status;
+int wysylajacy;
 void *startWatekKom(void *ptr) {
     while (dontStop) {
         debug("Czekam na recv");
-        // MPI_Recv( &pakiet, 1, MPI_PAKIET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        //komunikat = MPI_TAG?
+        MPI_Recv( &pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+        komunikat = MPI_TAG;
+        wysylajacy = MPI_SOURCE;
         switch(komunikat) {
             case REQ:
                 debug("Otrzymalem REQ...");
                 if (stan == czekam)
-                    //wyslij ACK(zegar, nr_tunelu)
+                // nie powinniśmy zerować structa?
+                MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
+                //wysylajacy moze byc nie tak, czy thread_id bedzie jednoznaczny z rank?
                 oczekujace++;
                 break;
             case INSIDE:
