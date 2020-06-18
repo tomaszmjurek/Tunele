@@ -22,8 +22,9 @@ void *startWatekKom(void *ptr) {
                 if (stan == czekam)
                 // nie powinniśmy zerować structa?
                 MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
-                //wysylajacy moze byc nie tak, czy thread_id bedzie jednoznaczny z rank?
                 oczekujace++;
+                //wysylajacy moze byc nie tak, czy thread_id bedzie jednoznaczny z rank?
+                //co z zwiekszeniem oczekujacy w stanie Zajety?
                 break;
             case INSIDE:
                 debug("Otrzymalem INSIDE...");
@@ -31,14 +32,19 @@ void *startWatekKom(void *ptr) {
                     //usunzkolejkiZadanJesliJest
                 oczekujace--;
                 //uaktualnijTunele(1)
+                dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek );
+                //dodanie do kolejki jeśli kierunek =0
                 break;
             case RELEASE:
                 debug("Otrzymalem RELEASE...");
                 //uaktualnijTunele(-1)
+                usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek)
+                //warunek z kolejką procesów znów
                 break;
             case STOP:
                 //zwolnij pamiec, zabij procesy
                 dontStop = false;
+                terminate();
             default:
                 debug("Otrzymalem błędny komunikat");
         }
