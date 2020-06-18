@@ -1,9 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
 #include "main.h"
+
 using namespace std;
 
+pthread_t threadKom, threadBogacz;
 
 int main(int argc, char *argv[]) {
     
@@ -23,8 +22,10 @@ int main(int argc, char *argv[]) {
     
     if (POJEMNOSC_TUNELU < ROZMIAR_EKIPY) {
         cout << "Pojemność tunelu za mała, zalecane > 40" << endl;
-        return 0;
+        return 1;
     }
+
+    pthread_create(&threadKom, NULL, startWatekKom, 0);
 
     //tworz watki
 

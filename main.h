@@ -1,5 +1,10 @@
+#ifndef GLOBALH
+#define GLOBALH
 
-#include "Tunel.cpp"
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <pthread.h>
 
 typedef enum komunikaty {REQ, ACK, INSIDE, RELEASE, STOP};
 typedef enum stany {czekam, zajety};

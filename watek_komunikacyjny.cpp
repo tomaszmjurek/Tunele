@@ -8,7 +8,7 @@ bool dontStop = true;
 stany stan;
 komunikaty komunikat;
 
-void *startKomWatek(void *ptr) {
+void *startWatekKom(void *ptr) {
     while (dontStop) {
         debug("Czekam na recv");
         // MPI_Recv( &pakiet, 1, MPI_PAKIET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);

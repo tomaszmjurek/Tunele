@@ -1,3 +1,5 @@
+#include "main.h"
+
 class Tunel {
     public:
         int zajetosc;
