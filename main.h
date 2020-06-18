@@ -10,7 +10,7 @@
 
 typedef enum komunikaty {REQ, ACK, INSIDE, RELEASE, STOP};
 typedef enum stany {czekam, zajety};
-typedef enum {tam, zPowrotem, brak } kierunki;
+typedef enum kierunki {tam, zPowrotem, brak };
 
 
 int id_proc; //temp

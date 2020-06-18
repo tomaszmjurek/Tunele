@@ -1,12 +1,6 @@
 #include "main.h"
 #include "tunel.h"
 
-// class Tunel {
-//     public:
-//         int zajetosc;
-//         kierunki kierunek;
-// };
-
 /**
  * sprawdza najpiew tunel bazujac na id_procesu,
  * aby rozdzielic procesy na wieksza liczbe tuneli
