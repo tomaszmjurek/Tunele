@@ -2,12 +2,12 @@
 #include <string>
 using namespace std;
 #include "watek_komunikacyjny.h"
-// #include "watek_glowny.h"
+#include "watek_glowny.h"
 #include "tunel.h"
 
 volatile int oczekujace;
 bool dontStop = true;
-stany stan;
+
 packet_t pakiet;
 
 int wysylajacy;
@@ -22,17 +22,10 @@ void *startWatekKom(void *ptr) {
         switch(komunikat) {
             case REQ:
                 debug("Otrzymalem REQ...");
-
                 if (stan == czekam) {
                 // nie powinniśmy zerować structa?
-
-                    MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
+                    MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK, MPI_COMM_WORLD);
                 }
-                MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
-
-                                if (stan == czekam)
-                // nie powinniśmy zerować structa?
-                MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
                 oczekujace++;
                 //wysylajacy moze byc nie tak, czy thread_id bedzie jednoznaczny z rank?
                 //co z zwiekszeniem oczekujacy w stanie Zajety?
@@ -42,13 +35,12 @@ void *startWatekKom(void *ptr) {
                 if (stan == czekam)
                     //usunzkolejkiZadanJesliJest
                 oczekujace--;
-                //uaktualnijTunele(1)
-                //dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek);
+                dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 //dodanie do kolejki jeśli kierunek =0
                 break;
             case RELEASE:
                 debug("Otrzymalem RELEASE...");
-                //usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek);
+                usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 //warunek z kolejką procesów znów
                 break;
             case STOP:
@@ -59,4 +51,15 @@ void *startWatekKom(void *ptr) {
                 debug("Otrzymalem błędny komunikat");
         }
     }
+}
+
+packet_t przygotujPakiet(int nr_tunelu, kierunki gdzie) {
+    packet_t pakiet;
+    pakiet.kierunek = gdzie;
+    pakiet.nr_tunelu = nr_tunelu;
+    pakiet.rozmiar_grupy = ROZMIAR_EKIPY;
+    pakiet.proc_zegar = zegar;
+    pakiet.proc_id = id_proc;
+
+    return pakiet;
 }

@@ -3,5 +3,6 @@
 
 /* wątek komunikacyjny: odbieranie wiadomości i reagowanie na nie poprzez zmiany stanu */
 void *startWatekKom(void *ptr);
+packet_t przygotujPakiet(int, kierunki);
 
 #endif

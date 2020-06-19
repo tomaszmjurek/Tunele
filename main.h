@@ -8,13 +8,16 @@
 
 enum komunikat {REQ, ACK, INSIDE, RELEASE, STOP};
 enum stany {czekam, zajety};
+extern volatile stany stan;
 enum kierunki {tam, zPowrotem, brak };
 
-extern int id_proc; //temp
+extern int id_proc;
 extern int LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP;
+extern int zegar;
+extern volatile int oczekujace;
 
 typedef struct {
-    int kierunek;
+    kierunki kierunek;
     int nr_tunelu;
     int rozmiar_grupy;
     int proc_zegar;

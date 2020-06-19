@@ -5,12 +5,15 @@
 #include <unistd.h>
 
 int zegar;
-int zapisanyZegar;
+MPI_Status status;
+// int zapisanyZegar;
 // int oczekujace;
 //kierunki_t kierunek; //?
 
 //kolejkaDostepu
 //bool czekaj wspoldzielony z komunikacyjnym
+
+packet_t pakiet;
 
 void mainLoop() {
     czekajNaWejscie(tam);
@@ -22,14 +25,29 @@ void mainLoop() {
 }
 
 void czekajNaWejscie(kierunki gdzie) {
-    zapisanyZegar = zegar;
-    // kierunek = gdzie;//?
-    if (znajdzMiejsceWTunelu(gdzie) != -1) {
-        //czekaj na release
+    int zapisanyZegar = zegar;
+    stan = czekam;
+    int wybranyTunel = znajdzMiejsceWTunelu(gdzie);
+
+    if /* nie ma miejsca */ (wybranyTunel != -1) {
+        //czekaj na release MPIrcv albo info do watku kom
         //zaktualizuj tunele
         //sprawdz tunele (czekajNaWejscie(k)), ale zegar
         //moze jakis return
     } else {
+        MPI_Bcast(&przygotujPakiet(wybranyTunel, gdzie), 40, MPI_PAKIET_T, 0/*BROADCAST!*/, REQ, MPI_COMM_WORLD);
+        int kolejka = 0; //vector
+        for (int i = 0; i < oczekujace; i++) {
+            MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
+            if (pakiet.nr_tunelu == wybranyTunel && pakiet.proc_zegar < zegar) {
+                // dodajDoKolejkiDostepu
+                kolejka++;
+            }
+        }
+
+        if(kolejka == 0) {
+
+        }
         //odczytaj ACK od oczekujacej procesy
         //if masz dostep -> return (przejdzTunelem)
         //else
@@ -40,19 +58,24 @@ void czekajNaWejscie(kierunki gdzie) {
 }
 
 void przejdzTunelem(kierunki gdzie) {
-    //wyslij inside
+    //MPI_Send(przygotujPakiet(gdzie), 40, MPI_PAKIET_T, BROADCAST, INSIDE, MPI_COMM_WORLD);
     //usun kolejkeDostepu
-    //Sleep(100);
+    sleep(3);
     //jesli jestes pierwszy return
     //else czekaj az sie zwolni (RELEASE)
     //wyslij RELEASE
+    
+    pakiet = przygotujPakiet(0 /*numer tunelu*/,gdzie); 
+    MPI_Send(&pakiet, 40, MPI_PAKIET_T, 0/*BROADCAST!*/, RELEASE, MPI_COMM_WORLD);
 }
 
 void krainaSzczesliwosci() {
+    debug("Jestem w krainie szczesliwosci");
     sleep(5);
 }
 
 void dojdzDoSiebie() {
+    debug("Dochodze do siebie");
     sleep(5);
 }
 
