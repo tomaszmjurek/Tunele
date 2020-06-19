@@ -16,43 +16,40 @@ void finalizuj()
     // println("czekam na wątek \"komunikacyjny\"\n" );
     // pthread_join(threadKom,NULL);
     // if (rank==0) pthread_join(threadMon,NULL);
-    // MPI_Type_free(&MPI_PAKIET_T);
-    debug("Finishing process\n");
+    //MPI_Type_free(&MPI_PAKIET_T);
     MPI_Finalize();
 }
 
-void inicjujMPI(int *argc, char ***argv, int liczbaProcesow) {
+void inicjujMPI(int *argc, char *argv[]) {
+
     int provided;
-    MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided); //3 w moim systemie?
-    debug("provided %d", provided);
+    MPI_Init_thread(argc, &argv, MPI_THREAD_MULTIPLE, &provided); //3 w moim systemie?
     if (provided < MPI_THREAD_MULTIPLE) {
         debug("Error - MPI does not provide needed threading level");
         finalizuj();
+        //return x
     }
-    MPI_Comm_size(MPI_COMM_WORLD, &liczbaProcesow);
+    MPI_Comm_size(MPI_COMM_WORLD, &LICZBA_EKIP);
     MPI_Comm_rank(MPI_COMM_WORLD, &id_proc);
-    debug("Started process");
 }
 
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
 
-    LICZBA_EKIP = 3; //hardcoded
-    inicjujMPI(&argc, &argv, LICZBA_EKIP);
+    inicjujMPI(&argc, argv);
 
     // Przygotowanie danych
-    if (argc > 0) { // == 5
+    if (argc == 3) { // == 5
         LICZBA_TUNELI = atoi(argv[1]);
         POJEMNOSC_TUNELU = atoi(argv[2]); //wieksza niz min 1 ekipa
         LICZBA_EKIP = atoi(argv[3]);
     } else {
         LICZBA_TUNELI = 5;
         POJEMNOSC_TUNELU = 40;
-        LICZBA_EKIP = 15;
     }
 
     if (POJEMNOSC_TUNELU < ROZMIAR_EKIPY) {
-        cout << "Pojemność tunelu za mała, zalecane > 40" << endl;
+        debug("Pojemność tunelu za mała, zalecane > 40");
         finalizuj();
         return 1;
     }
@@ -60,13 +57,14 @@ int main(int argc, char **argv) {
     tunele = new Tunel [LICZBA_TUNELI];
     czyscTunele();
 
-    ROZMIAR_EKIPY = rand() % 21 + 10;
+    ROZMIAR_EKIPY = rand() % 21 + 10; //rand od nowa
+
+    debug("Bogacz gotowy! Tunele: %d, Pojemnosc: %d, Ekipa: %d", LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY);
 
     // pthread_create(&watekKom, NULL, startWatekKom, 0);
     // mainLoop(); // ew. osobny watek
-    //cout << "Running MPI proces rank: " << id_proc << endl;
-    debug("Running MPI");
 
+    debug("Bogacz znika");
     finalizuj();
 
     return 0;
