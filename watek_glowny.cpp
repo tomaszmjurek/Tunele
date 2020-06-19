@@ -35,7 +35,7 @@ void czekajNaWejscie(kierunki gdzie) {
         //sprawdz tunele (czekajNaWejscie(k)), ale zegar
         //moze jakis return
     } else {
-        MPI_Bcast(&przygotujPakiet(wybranyTunel, gdzie), 40, MPI_PAKIET_T, 0/*BROADCAST!*/, REQ, MPI_COMM_WORLD);
+        MPI_Broadcast(wybranyTunel, gdzie, REQ);
         int kolejka = 0; //vector
         for (int i = 0; i < oczekujace; i++) {
             MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);

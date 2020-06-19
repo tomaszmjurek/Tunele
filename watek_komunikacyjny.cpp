@@ -24,7 +24,7 @@ void *startWatekKom(void *ptr) {
                 debug("Otrzymalem REQ...");
                 if (stan == czekam) {
                 // nie powinniśmy zerować structa?
-                    MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK, MPI_COMM_WORLD);
+                    MPI_Send(&pakiet, 40, MPI_PAKIET_T, id_proc, REQ, MPI_COMM_WORLD);
                 }
                 oczekujace++;
                 //wysylajacy moze byc nie tak, czy thread_id bedzie jednoznaczny z rank?
@@ -62,4 +62,13 @@ packet_t przygotujPakiet(int nr_tunelu, kierunki gdzie) {
     pakiet.proc_id = id_proc;
 
     return pakiet;
+}
+
+void MPI_Broadcast(int nr_tunelu, kierunki gdzie, komunikat komunikat) {
+    packet_t pakiet = przygotujPakiet(nr_tunelu, gdzie);
+    for (int i = 0; i < LICZBA_EKIP; i++) {
+        if (i != id_proc) {
+            MPI_Send(&pakiet, 40, MPI_PAKIET_T, i, komunikat, MPI_COMM_WORLD);
+        }
+    }
 }
