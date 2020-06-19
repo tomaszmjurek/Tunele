@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     inicjujMPI(argc, argv);
 
     // Przygotowanie danych
-    if (argc > 0) { // == 5
+    if (argc ==3) { // == 5
         LICZBA_TUNELI = atoi(argv[1]);
         POJEMNOSC_TUNELU = atoi(argv[2]); //wieksza niz min 1 ekipa
         LICZBA_EKIP = atoi(argv[3]);

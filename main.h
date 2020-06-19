@@ -16,8 +16,8 @@ enum kierunki {tam, zPowrotem, brak };
 extern int id_proc; //temp
 extern int LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP;
 
-struct package{
-    int kierunek;
+typedef struct {
+    kierunki kierunek;
     int nr_tunelu;
     int rozmiar_grupy;
     int proc_zegar;

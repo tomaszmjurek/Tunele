@@ -2,7 +2,7 @@
 #include <string>
 using namespace std;
 #include "watek_komunikacyjny.h"
-#include "watek_glowny.h"
+// #include "watek_glowny.h"
 #include "tunel.h"
 
 volatile int oczekujace;
@@ -12,27 +12,22 @@ komunikaty komunikat;
 packet_t pakiet;
 MPI_STATUS status;
 int wysylajacy;
+int tag;
 void *startWatekKom(void *ptr) {
     while (dontStop) {
         debug("Czekam na recv");
         MPI_Recv( &pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        komunikat = MPI_TAG;
-        wysylajacy = MPI_SOURCE;
-        switch(komunikat) {
+        tag = status.MPI_TAG;
+        wysylajacy = status.MPI_SOURCE;
+        switch(static_cast<komunikat>(tag)) {
             case REQ:
                 debug("Otrzymalem REQ...");
 
                 if (stan == czekam) {
                 // nie powinniśmy zerować structa?
-
                     MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
                 }
-                MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
-
-                                if (stan == czekam)
-                // nie powinniśmy zerować structa?
-                MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
-                oczekujace++;
+               oczekujace++;
                 //wysylajacy moze byc nie tak, czy thread_id bedzie jednoznaczny z rank?
                 //co z zwiekszeniem oczekujacy w stanie Zajety?
                 break;
