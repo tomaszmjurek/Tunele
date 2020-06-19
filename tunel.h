@@ -1,8 +1,7 @@
 #ifndef TUNEL_H
 #define TUNEL_H
-// #include "main.h"
-
-//najwyzej zdef kierunki
+#include <vector>
+using namespace std;
 
 int znajdzMiejsceWTunelu(kierunki gdzie);
 void dodajDoTunelu(int nrTunelu, int rozmiarEkipy, kierunki gdzie);
@@ -15,6 +14,7 @@ class Tunel {
         kierunki kierunek;
 };
 
-extern Tunel * tunele;
+extern volatile Tunel * tunele;
+// extern volatile vector<int> kolejkaDoTunelu;
 
 #endif

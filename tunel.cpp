@@ -2,6 +2,7 @@
 #include "tunel.h"
 
 Tunel * tunele; /* zmienna globalna */
+// vector<int> kolejkaDoTunelu = {};
 
 /**
  * sprawdza najpiew tunel bazujac na id_procesu,
@@ -45,3 +46,4 @@ void czyscTunele() {
         tunele[i].kierunek = brak;
     }
 }
+

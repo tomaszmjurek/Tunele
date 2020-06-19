@@ -3,15 +3,11 @@
 #include "tunel.h"
 #include "watek_komunikacyjny.h"
 #include <unistd.h>
+#include <algorithm>
 
 int zegar;
 MPI_Status status;
-// int zapisanyZegar;
-// int oczekujace;
-//kierunki_t kierunek; //?
-
-//kolejkaDostepu
-//bool czekaj wspoldzielony z komunikacyjnym
+vector<int> kolejkaDoTunelu = {};
 
 packet_t pakiet;
 
@@ -36,16 +32,19 @@ void czekajNaWejscie(kierunki gdzie) {
         //moze jakis return
     } else {
         MPI_Broadcast(wybranyTunel, gdzie, REQ);
-        int kolejka = 0; //vector
+        kolejkaDoTunelu.clear();
         for (int i = 0; i < oczekujace; i++) {
             MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
             if (pakiet.nr_tunelu == wybranyTunel && pakiet.proc_zegar < zegar) {
                 // dodajDoKolejkiDostepu
-                kolejka++;
+                kolejkaDoTunelu.push_back(pakiet.proc_zegar); 
             }
+            sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); //kolejno, nie ma w zasadzie znaczenia
         }
 
-        if(kolejka == 0) {
+        if(!kolejkaDoTunelu.empty()) {
+            sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end());
+            //czekaj na INSIDE, zmien
 
         }
         //odczytaj ACK od oczekujacej procesy
