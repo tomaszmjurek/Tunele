@@ -7,15 +7,36 @@ using namespace std;
 int id_proc, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
 pthread_t watekKom, watekGlowny;
 
-void inicjujMPI(int argc, char *argv[]) {
-
-    MPI_Init(NULL, NULL);
-
+void finalizuj()
+{
+    // pthread_mutex_destroy( &stateMut);
+    /* Czekamy, aż wątek potomny się zakończy */
+    // println("czekam na wątek \"komunikacyjny\"\n" );
+    // pthread_join(threadKom,NULL);
+    // if (rank==0) pthread_join(threadMon,NULL);
+    // MPI_Type_free(&MPI_PAKIET_T);
+    debug("Finishing process\n");
+    MPI_Finalize();
 }
 
-int main(int argc, char *argv[]) {
+void inicjujMPI(int *argc, char ***argv, int liczbaProcesow) {
+    int provided;
+    MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided); //3 w moim systemie?
+    debug("provided %d", provided);
+    if (provided < MPI_THREAD_MULTIPLE) {
+        debug("Error - MPI does not provide needed threading level");
+        finalizuj();
+    }
+    MPI_Comm_size(MPI_COMM_WORLD, &liczbaProcesow);
+    MPI_Comm_rank(MPI_COMM_WORLD, &id_proc);
+    debug("Started process");
+}
 
-    inicjujMPI(argc, argv);
+
+int main(int argc, char **argv) {
+
+    LICZBA_EKIP = 3; //hardcoded
+    inicjujMPI(&argc, &argv, LICZBA_EKIP);
 
     // Przygotowanie danych
     if (argc > 0) { // == 5
@@ -30,6 +51,7 @@ int main(int argc, char *argv[]) {
 
     if (POJEMNOSC_TUNELU < ROZMIAR_EKIPY) {
         cout << "Pojemność tunelu za mała, zalecane > 40" << endl;
+        finalizuj();
         return 1;
     }
 
@@ -38,12 +60,12 @@ int main(int argc, char *argv[]) {
 
     ROZMIAR_EKIPY = rand() % 21 + 10;
 
-    id_proc = 0; //MPI get_id
+    // pthread_create(&watekKom, NULL, startWatekKom, 0);
+    // mainLoop(); // ew. osobny watek
+    //cout << "Running MPI proces rank: " << id_proc << endl;
+    debug("Running MPI");
 
-    pthread_create(&watekKom, NULL, startWatekKom, 0);
-    mainLoop(); // ew. osobny watek
-
-    MPI_Finalize();
+    finalizuj();
 
     return 0;
 }
