@@ -2,21 +2,22 @@
 #include <string>
 using namespace std;
 #include "watek_komunikacyjny.h"
-#include "watek_glowny.h"
-#include "tunel.h"
+// #include "watek_glowny.h"
+// #include "tunel.h"
 
 volatile int oczekujace;
 bool dontStop = true;
 stany stan;
-komunikaty komunikat;
 packet_t pakiet;
-MPI_STATUS status;
+
 int wysylajacy;
+
 void *startWatekKom(void *ptr) {
+    MPI_Status status;
     while (dontStop) {
         debug("Czekam na recv");
         MPI_Recv( &pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        komunikat = MPI_TAG;
+        komunikat komunikat= status.MPI_TAG;
         wysylajacy = MPI_SOURCE;
         switch(komunikat) {
             case REQ:

@@ -4,8 +4,10 @@
 #include "tunel.h"
 
 using namespace std;
+
 int id_proc, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
 pthread_t watekKom, watekGlowny;
+MPI_Datatype MPI_PAKIET_T;
 
 void finalizuj()
 {
