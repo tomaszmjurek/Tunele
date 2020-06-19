@@ -22,4 +22,13 @@ extern int LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP;
 // #define debug(...) ;
 // #endif
 
+struct package{
+    int kierunek;
+    int nr_tunelu;
+    int rozmiar_grupy;
+    int proc_zegar;
+    int proc_id;
+}packet_t
+extern MPI_Datatype MPI_PAKIET_T;
+
 #endif
