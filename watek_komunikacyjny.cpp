@@ -21,6 +21,7 @@ void *startWatekKom(void *ptr) {
         switch(komunikat) {
             case REQ:
                 debug("Otrzymalem REQ...");
+<<<<<<< HEAD
                 if (stan == czekam) {
                 // nie powinniśmy zerować structa?
 <<<<<<< HEAD
@@ -29,6 +30,11 @@ void *startWatekKom(void *ptr) {
 =======
                 MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
 >>>>>>> dalszy rozwój watek_komunikacyjny
+=======
+                if (stan == czekam)
+                // nie powinniśmy zerować structa?
+                MPI_Send(&pakiet, 40, MPI_PAKIET_T, wysylajacy, ACK,MPI_COMM_WORLD);
+>>>>>>> 0101ce42ddabc3addbd631cbcad062f80a6c0c8a
                 oczekujace++;
                 //wysylajacy moze byc nie tak, czy thread_id bedzie jednoznaczny z rank?
                 //co z zwiekszeniem oczekujacy w stanie Zajety?
@@ -40,20 +46,28 @@ void *startWatekKom(void *ptr) {
                 oczekujace--;
                 //uaktualnijTunele(1)
 <<<<<<< HEAD
+<<<<<<< HEAD
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek);
 =======
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek );
 >>>>>>> dalszy rozwój watek_komunikacyjny
+=======
+                dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek );
+>>>>>>> 0101ce42ddabc3addbd631cbcad062f80a6c0c8a
                 //dodanie do kolejki jeśli kierunek =0
                 break;
             case RELEASE:
                 debug("Otrzymalem RELEASE...");
                 //uaktualnijTunele(-1)
 <<<<<<< HEAD
+<<<<<<< HEAD
                 usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek);
 =======
                 usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek)
 >>>>>>> dalszy rozwój watek_komunikacyjny
+=======
+                usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy,pakiet.kierunek)
+>>>>>>> 0101ce42ddabc3addbd631cbcad062f80a6c0c8a
                 //warunek z kolejką procesów znów
                 break;
             case STOP:
