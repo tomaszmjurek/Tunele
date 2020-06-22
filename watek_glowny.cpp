@@ -5,14 +5,13 @@
 #include <unistd.h>
 #include <algorithm>
 
-int zegar;
 MPI_Status status;
 vector<int> kolejkaDoTunelu = {};
 
 packet_t pakiet;
 
 void mainLoop() {
-    czekajNaWejscie(tam);
+    czekajNaWejscie(tam, zegar);
     przejdzTunelem(tam);
     krainaSzczesliwosci();
     czekajNaWejscie(zPowrotem);
@@ -20,35 +19,35 @@ void mainLoop() {
     dojdzDoSiebie();
 }
 
-void czekajNaWejscie(kierunki gdzie) {
+void czekajNaWejscie(kierunki gdzie, int zegar) {
     int zapisanyZegar = zegar;
-    stan = czekam;
+    stanBogacza = czekamNaTunel;
     int wybranyTunel = znajdzMiejsceWTunelu(gdzie);
 
     if /* nie ma miejsca */ (wybranyTunel != -1) {
-        //czekaj na release MPIrcv albo info do watku kom
-        //zaktualizuj tunele
-        //sprawdz tunele (czekajNaWejscie(k)), ale zegar
-        //moze jakis return
+        stanWatku = czekamNaRelease;
+        while (stanWatku == czekamNaRelease) {
+            // TODO: aktywne czekanie - rozwiazanie najprostrze, moze da się to ulepszyć
+        }
+        // stanWatku = ide;
+        czekajNaWejscie(gdzie, zapisanyZegar);
     } else {
         MPI_Broadcast(wybranyTunel, gdzie, REQ);
         kolejkaDoTunelu.clear();
-        for (int i = 0; i < oczekujace; i++) {
+        for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
             MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
             if (pakiet.nr_tunelu == wybranyTunel && pakiet.proc_zegar < zegar) {
-                // dodajDoKolejkiDostepu
-                kolejkaDoTunelu.push_back(pakiet.proc_zegar); 
+                kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
+                //sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); // raczej zbedne
             }
-            sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); //kolejno, nie ma w zasadzie znaczenia
         }
 
-        if(!kolejkaDoTunelu.empty()) {
-            sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end());
-            //czekaj na INSIDE, zmien
-
+        stanWatku = czekamNaInside;
+        while(!kolejkaDoTunelu.empty()) {
+            // TODO: aktywne czekanie, niedobrze
         }
-        //odczytaj ACK od oczekujacej procesy
-        //if masz dostep -> return (przejdzTunelem)
+        stanWatku = ide;
+
         //else
         //dopoki jest kolejka sluchaj inside i usuwaj
         //masz dostep return, albo koniec funkcji
@@ -78,3 +77,21 @@ void dojdzDoSiebie() {
     sleep(5);
 }
 
+
+/**
+ * Jesli proces jest w kolejce usuwa go z niej (tzn usuwa pierwszy, bo pozniejszy by nie wyslal INSIDE)
+ */
+void obsluzKolejkeDoTunelu(int proc_id) {
+
+    if /* vector contains element */ (find(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end(), proc_id) != kolejkaDoTunelu.end()) {
+
+        /* pop_front */
+        kolejkaDoTunelu.front() = std::move(kolejkaDoTunelu.back());
+        kolejkaDoTunelu.pop_back();
+    }
+
+    if (kolejkaDoTunelu.empty()) {
+        // sprawdz czy jest miejsce w tunelu
+        // mozesz isc, ale nie do konca, bo co jak zajety tunel
+    }
+}

@@ -7,8 +7,9 @@
 #include <pthread.h>
 
 enum komunikat {REQ, ACK, INSIDE, RELEASE, STOP};
-enum stany {czekam, zajety};
-extern volatile stany stan;
+enum stany {czekamNaTunel, ide, czekamNaRelease, czekamNaInside};
+extern volatile stany stanBogacza; // czekamNaTunel / ide
+extern volatile stany stanWatku; // czekamNaRelease / czekamNaInside / ide
 enum kierunki {tam, zPowrotem, brak };
 
 extern int id_proc;

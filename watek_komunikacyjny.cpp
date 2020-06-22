@@ -22,26 +22,26 @@ void *startWatekKom(void *ptr) {
         switch(komunikat) {
             case REQ:
                 debug("Otrzymalem REQ...");
-                if (stan == czekam) {
-                // nie powinniśmy zerować structa?
-                    MPI_Send(&pakiet, 40, MPI_PAKIET_T, id_proc, REQ, MPI_COMM_WORLD);
+                if (stanBogacza == czekamNaTunel) {
+                // TODO: nie powinniśmy zerować structa?
+                    // Wyślij ACK z zegarem swojego REQ i numerem tunelu o który się ubiegasz 
+                    // czyli zapisanyZegar musi byc wspoldzielony, wysylamy do wszystkich czy do jednego?
                 }
                 oczekujace++;
-                //wysylajacy moze byc nie tak, czy thread_id bedzie jednoznaczny z rank?
-                //co z zwiekszeniem oczekujacy w stanie Zajety?
                 break;
             case INSIDE:
                 debug("Otrzymalem INSIDE...");
-                if (stan == czekam)
-                    //usunzkolejkiZadanJesliJest
+                if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside)
+                   usunZKolejkiDoTuneluJesliIstnieje(pakiet.proc_id);
                 oczekujace--;
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
-                //dodanie do kolejki jeśli kierunek =0
+                //usuniecie z kolejkiDoTunelu
                 break;
             case RELEASE:
                 debug("Otrzymalem RELEASE...");
                 usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
-                //warunek z kolejką procesów znów
+                //warunek z kolejką procesów w Tunelu
+                if (stanWatku == czekamNaRelease) stanWatku = ide; // do petli while
                 break;
             case STOP:
                 //zwolnij pamiec, zabij procesy
