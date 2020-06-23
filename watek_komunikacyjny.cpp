@@ -5,12 +5,12 @@ using namespace std;
 #include "watek_glowny.h"
 #include "tunel.h"
 
-volatile int oczekujace;
+//int oczekujace = 0;
 bool dontStop = true;
 
 packet_t pakiet;
 
-int wysylajacy;
+
 
 void *startWatekKom(void *ptr) {
     MPI_Status status;

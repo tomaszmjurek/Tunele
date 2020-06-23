@@ -12,7 +12,7 @@ void dojdzDoSiebie();
 
 void obsluzKolejkeDoTunelu(int);
 
-extern volatile int zapisanyZegar, wybranyTunel;
-extern volatile kierunki wybranyKierunek; // czy bedzie widziany
+extern int zapisanyZegar, wybranyTunel;
+extern kierunki wybranyKierunek; // czy bedzie widziany deklaracja poza main.h
 
 #endif
