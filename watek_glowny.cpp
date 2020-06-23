@@ -16,11 +16,11 @@ void mainLoop() {
     wybranyKierunek = tam;
     czekajNaWejscie(wybranyKierunek);
     przejdzTunelem(wybranyKierunek);
-    krainaSzczesliwosci();
-    wybranyKierunek = zPowrotem;
-    czekajNaWejscie(wybranyKierunek);
-    przejdzTunelem(wybranyKierunek);
-    dojdzDoSiebie();
+    // krainaSzczesliwosci();
+    // wybranyKierunek = zPowrotem;
+    // czekajNaWejscie(wybranyKierunek);
+    // przejdzTunelem(wybranyKierunek);
+    // dojdzDoSiebie();
 }
 
 void czekajNaWejscie(kierunki gdzie) {
@@ -31,23 +31,27 @@ void czekajNaWejscie(kierunki gdzie) {
     int wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     stanWatku = czekamNaRelease;
     while /* nie ma miejsca */(wybranyTunel == -1) {
+        debug("Nie ma dla mnie tunelu, czekam az ktos wyjdzie");
         MPI_RecvLocal(PRZEKAZ_RELEASE);
         wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     }
     stanWatku = ide;
     
     /* Rozglaszam gdzie chcę sie dostać i zbieram odpowiedzi */
+    debug("Oglaszam, ze chce do tunelu %d", wybranyTunel);
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
     kolejkaDoTunelu.clear();
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
         MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
         if (pakiet.nr_tunelu == wybranyTunel && pakiet.proc_zegar < zegar) {
             kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
+            debug("No co Pan sie wpycha");
             //sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); // raczej zbedne
         }
     }
 
     /* Czekam az bede mial pierwszenstwo */
+    debug("Czekam w kolejce");
     stanWatku = czekamNaInside;
     while(!kolejkaDoTunelu.empty()) {
         debug("stanBogacza: $s stanWatku: %s", stanBogacza, stanWatku);
@@ -73,8 +77,8 @@ void przejdzTunelem(kierunki gdzie) {
     //else czekaj az sie zwolni (RELEASE)
     //wyslij RELEASE
     
-    pakiet = przygotujPakiet(0 /*numer tunelu*/,gdzie); 
-    MPI_Send(&pakiet, 40, MPI_PAKIET_T, 0/*BROADCAST!*/, RELEASE, MPI_COMM_WORLD);
+    // pakiet = przygotujPakiet(0 /*numer tunelu*/,gdzie); 
+    // MPI_Send(&pakiet, 40, MPI_PAKIET_T, 0/*BROADCAST!*/, RELEASE, MPI_COMM_WORLD);
 }
 
 void krainaSzczesliwosci() {

@@ -8,9 +8,8 @@ using namespace std;
 //int oczekujace = 0;
 bool dontStop = true;
 
-packet_t pakiet;
-
-
+packet_t pakiet; //czy nie zerowac regularnie
+packet_t pakietWysylany;
 
 void *startWatekKom(void *ptr) {
     MPI_Status status;
@@ -23,10 +22,9 @@ void *startWatekKom(void *ptr) {
             case REQ:
                 debug("[KOM] Otrzymalem REQ...");
                 if /* bogacz czeka do tunelu */ (stanBogacza == czekamNaTunel && wybranyTunel != -1) {
-                    pakiet = przygotujPakiet(wybranyTunel, wybranyKierunek, zapisanyZegar);
-                // TODO: nie powinniśmy zerować structa?
-                    // Wyślij ACK z zegarem swojego REQ i numerem tunelu (jesli nie -1) o który się ubiegasz 
-                    MPI_Send(&pakiet, 40, MPI_PAKIET_T, i, komunikat, MPI_COMM_WORLD);
+                    pakietWysylany = przygotujPakiet(wybranyTunel, wybranyKierunek, zapisanyZegar);
+                    MPI_Send(&pakietWysylany, 40, MPI_PAKIET_T, pakiet.proc_id, ACK, MPI_COMM_WORLD);
+                    debug("[KOM] Wyslalem ACK tunel: %d kierunek: %d zegar: %d", wybranyTunel, wybranyKierunek, zapisanyZegar)
                 }
                 oczekujace++;
                 break;
@@ -37,6 +35,7 @@ void *startWatekKom(void *ptr) {
                 if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
                    MPI_SendLocal(PRZEKAZ_INSIDE);
+                   debug("[KOM] Przekazalem INSIDE do watku_glownego");
                 }
                 break;
             case RELEASE:
@@ -45,6 +44,7 @@ void *startWatekKom(void *ptr) {
                 //warunek z kolejką procesów w Tunelu
                 if (stanWatku == czekamNaRelease) {
                     MPI_SendLocal(PRZEKAZ_RELEASE);
+                    debug("[KOM] Przekazalem RELEASE do watku_glownego");
                 }
                 break;
             case STOP:

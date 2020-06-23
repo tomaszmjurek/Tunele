@@ -63,8 +63,9 @@ int main(int argc, char *argv[]) {
 
     debug("Bogacz gotowy! Tunele: %d, Pojemnosc: %d, Ekipa: %d", LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY);
 
-    // pthread_create(&watekKom, NULL, startWatekKom, 0);
-   // mainLoop(); // ew. osobny watek
+    pthread_create(&watekKom, NULL, startWatekKom, 0);
+
+    mainLoop(); // ew. osobny watek
 
     debug("Bogacz znika");
     finalizuj();
