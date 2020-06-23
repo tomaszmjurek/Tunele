@@ -19,7 +19,7 @@ void finalizuj()
     // println("czekam na wątek \"komunikacyjny\"\n" );
     // pthread_join(threadKom,NULL);
     // if (rank==0) pthread_join(threadMon,NULL);
-    //MPI_Type_free(&MPI_PAKIET_T);
+    MPI_Type_free(&MPI_PAKIET_T);
     MPI_Finalize();
 }
 
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 
     ROZMIAR_EKIPY = rand() % 21 + 10; //rand od nowa
 
-    debug("Bogacz gotowy! Tunele: %d, Pojemnosc: %d, Ekipa: %d", LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY);
+    debug("Bogacz gotowy! Tunele: %d, Ekipy: %d, Pojemnosc: %d, Ekipa: %d", LICZBA_TUNELI, LICZBA_EKIP, POJEMNOSC_TUNELU, ROZMIAR_EKIPY);
 
     pthread_create(&watekKom, NULL, startWatekKom, 0);
 

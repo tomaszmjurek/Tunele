@@ -43,8 +43,8 @@ void czekajNaWejscie(kierunki gdzie) {
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
     kolejkaDoTunelu.clear();
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
-        MPI_Recv(&pakiet_glowny, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
-        if (pakiet_glowny.nr_tunelu == wybranyTunel && pakiet_glowny.proc_zegar < zegar) {
+        MPI_Recv(&pakiet_glowny, sizeof(packet_t), MPI_BYTE, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
+        if (pakiet_glowny.nr_tunelu == wybranyTunel && obcyMaPierwszenstwo(pakiet_glowny)) {
             kolejkaDoTunelu.push_back(pakiet_glowny.proc_id); // rezygnuje z zapisaywanie proc_zegar
             debug("No co Pan sie wpycha");
             //sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); // raczej zbedne
@@ -52,10 +52,10 @@ void czekajNaWejscie(kierunki gdzie) {
     }
 
     /* Czekam az bede mial pierwszenstwo */
-    debug("Czekam w kolejce");
+    
     stanWatku = czekamNaInside;
     while(!kolejkaDoTunelu.empty()) {
-        debug("stanBogacza: %d stanWatku: %d", stanBogacza, stanWatku);
+        debug("Czekam w kolejce do tunelu %d", wybranyTunel);
         MPI_RecvLocal(PRZEKAZ_INSIDE);
     }
     stanWatku = ide;
@@ -63,13 +63,15 @@ void czekajNaWejscie(kierunki gdzie) {
     /* Czekam az bede mial miejsce */
     stanWatku = czekamNaRelease;
     while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
-        debug("stanBogacza: %d stanWatku: %d", stanBogacza, stanWatku);
+        // debug("stanBogacza: %d stanWatku: %d", stanBogacza, stanWatku);
+        debug("Czekam na miejsce w tunelu %d", wybranyTunel);
         MPI_RecvLocal(PRZEKAZ_RELEASE);
     }
     stanWatku = ide;
 }
 
 void przejdzTunelem(kierunki gdzie) {
+    debug("JESTEM W TUNELU");
     stanBogacza = ide;
     //MPI_Send(przygotujPakiet(gdzie), 40, MPI_PAKIET_T, BROADCAST, INSIDE, MPI_COMM_WORLD);
     //usun kolejkeDostepu
@@ -104,4 +106,8 @@ void obsluzKolejkeDoTunelu(int proc_id) {
         kolejkaDoTunelu.front() = std::move(kolejkaDoTunelu.back());
         kolejkaDoTunelu.pop_back();
     }
+}
+
+bool obcyMaPierwszenstwo(packet_t pakiet_) {
+    return pakiet_.proc_zegar > zapisanyZegar || (pakiet_.proc_zegar == zapisanyZegar && pakiet_.proc_id < id_proc);
 }
