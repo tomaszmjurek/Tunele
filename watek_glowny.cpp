@@ -6,34 +6,38 @@
 #include <algorithm>
 
 MPI_Status status;
-vector<int> kolejkaDoTunelu = {};
+vector<int> kolejkaDoTunelu = {}; // wspoldzielenie?
+
+int zapisanyZegar = 0, wybranyTunel = -1;
 
 packet_t pakiet;
 
 void mainLoop() {
-    czekajNaWejscie(tam, zegar);
-    przejdzTunelem(tam);
+    wybranyKierunek = tam;
+    czekajNaWejscie(wybranyKierunek);
+    przejdzTunelem(wybranyKierunek);
     krainaSzczesliwosci();
-    czekajNaWejscie(zPowrotem);
-    przejdzTunelem(zPowrotem);
+    wybranyKierunek = zPowrotem;
+    czekajNaWejscie(wybranyKierunek);
+    przejdzTunelem(wybranyKierunek);
     dojdzDoSiebie();
 }
 
-void czekajNaWejscie(kierunki gdzie, int zegar) {
-    int zapisanyZegar = zegar;
+void czekajNaWejscie(kierunki gdzie) {
+    zapisanyZegar = zegar;
     stanBogacza = czekamNaTunel;
 
     /* Czekam az zwolni sie jakis tunel */
     int wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     stanWatku = czekamNaRelease;
     while /* nie ma miejsca */(wybranyTunel == -1) {
-        //MPI_Recv(local, przekazujeRELEASE)
+        MPI_RecvLocal(PRZEKAZ_RELEASE);
         wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     }
     stanWatku = ide;
     
     /* Rozglaszam gdzie chcę sie dostać i zbieram odpowiedzi */
-    MPI_Broadcast(wybranyTunel, gdzie, REQ);
+    MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
     kolejkaDoTunelu.clear();
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
         MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
@@ -47,7 +51,7 @@ void czekajNaWejscie(kierunki gdzie, int zegar) {
     stanWatku = czekamNaInside;
     while(!kolejkaDoTunelu.empty()) {
         debug("stanBogacza: $s stanWatku: %s", stanBogacza, stanWatku);
-        //MPI_Recv(przekazujeINSIDE);
+        MPI_RecvLocal(PRZEKAZ_INSIDE);
     }
     stanWatku = ide;
 
@@ -55,7 +59,7 @@ void czekajNaWejscie(kierunki gdzie, int zegar) {
     stanWatku = czekamNaRelease;
     while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
         debug("stanBogacza: $s stanWatku: %s", stanBogacza, stanWatku);
-        //MPI_Recv(local, przekazujeRELEASE)
+        MPI_RecvLocal(PRZEKAZ_RELEASE);
     }
     stanWatku = ide;
 }

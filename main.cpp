@@ -32,6 +32,7 @@ void inicjujMPI(int *argc, char *argv[]) {
     }
     MPI_Comm_size(MPI_COMM_WORLD, &LICZBA_EKIP);
     MPI_Comm_rank(MPI_COMM_WORLD, &id_proc);
+    ID_WATKU_KOM = 200 + id_proc;
 }
 
 

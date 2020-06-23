@@ -12,4 +12,7 @@ void dojdzDoSiebie();
 
 void obsluzKolejkeDoTunelu(int);
 
+extern volatile int zapisanyZegar, wybranyTunel;
+extern volatile kierunki wybranyKierunek; // czy bedzie widziany
+
 #endif
