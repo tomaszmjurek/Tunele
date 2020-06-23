@@ -9,8 +9,9 @@ MPI_Status status;
 vector<int> kolejkaDoTunelu = {}; // wspoldzielenie?
 
 int zapisanyZegar = 0, wybranyTunel = -1;
+kierunki wybranyKierunek = brak;
 
-packet_t pakiet;
+packet_t pakiet_glowny;
 
 void mainLoop() {
     wybranyKierunek = tam;
@@ -42,9 +43,9 @@ void czekajNaWejscie(kierunki gdzie) {
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
     kolejkaDoTunelu.clear();
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
-        MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
-        if (pakiet.nr_tunelu == wybranyTunel && pakiet.proc_zegar < zegar) {
-            kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
+        MPI_Recv(&pakiet_glowny, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
+        if (pakiet_glowny.nr_tunelu == wybranyTunel && pakiet_glowny.proc_zegar < zegar) {
+            kolejkaDoTunelu.push_back(pakiet_glowny.proc_id); // rezygnuje z zapisaywanie proc_zegar
             debug("No co Pan sie wpycha");
             //sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); // raczej zbedne
         }
@@ -54,7 +55,7 @@ void czekajNaWejscie(kierunki gdzie) {
     debug("Czekam w kolejce");
     stanWatku = czekamNaInside;
     while(!kolejkaDoTunelu.empty()) {
-        debug("stanBogacza: $s stanWatku: %s", stanBogacza, stanWatku);
+        debug("stanBogacza: %d stanWatku: %d", stanBogacza, stanWatku);
         MPI_RecvLocal(PRZEKAZ_INSIDE);
     }
     stanWatku = ide;
@@ -62,7 +63,7 @@ void czekajNaWejscie(kierunki gdzie) {
     /* Czekam az bede mial miejsce */
     stanWatku = czekamNaRelease;
     while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
-        debug("stanBogacza: $s stanWatku: %s", stanBogacza, stanWatku);
+        debug("stanBogacza: %d stanWatku: %d", stanBogacza, stanWatku);
         MPI_RecvLocal(PRZEKAZ_RELEASE);
     }
     stanWatku = ide;

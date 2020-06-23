@@ -5,9 +5,11 @@
 
 using namespace std;
 
-int id_proc, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
-int zegar = 0, oczekujace = 0;
-pthread_t watekKom, watekGlowny;
+int id_proc, ID_WATKU_KOM, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
+int zegar = 0;
+stany stanBogacza = ide, stanWatku = ide;
+
+pthread_t watekKom;
 MPI_Datatype MPI_PAKIET_T;
 
 void finalizuj()

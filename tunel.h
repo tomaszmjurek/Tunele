@@ -15,7 +15,7 @@ class Tunel {
         kierunki kierunek;
 };
 
-extern volatile Tunel * tunele;
+extern Tunel * tunele;
 // extern volatile vector<int> kolejkaDoTunelu;
 
 #endif

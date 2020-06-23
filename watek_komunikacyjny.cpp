@@ -5,11 +5,10 @@ using namespace std;
 #include "watek_glowny.h"
 #include "tunel.h"
 
-//int oczekujace = 0;
+int oczekujace = 0;
 bool dontStop = true;
 
-packet_t pakiet; //czy nie zerowac regularnie
-packet_t pakietWysylany;
+packet_t pakiet, pakietWysylany; //czy nie zerowac regularnie
 
 void *startWatekKom(void *ptr) {
     MPI_Status status;
