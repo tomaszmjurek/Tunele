@@ -10,6 +10,6 @@ void przejdzTunelem(kierunki);
 void krainaSzczesliwosci();
 void dojdzDoSiebie();
 
-void usunZKolejkiDoTuneluJesliIstnieje(int);
+void obsluzKolejkeDoTunelu(int);
 
 #endif

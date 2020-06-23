@@ -24,6 +24,17 @@ int znajdzMiejsceWTunelu(kierunki gdzie) {
     return -1;
 }
 
+/**
+ * sprawdza miejsce w konkretnym tunelu 
+ * @return true / false
+ */
+bool sprawdzMiejsceWTunelu(int nrTunelu, kierunki gdzie) {
+    if (tunele[nrTunelu].kierunek == gdzie || tunele[nrTunelu].kierunek == brak)
+        if (tunele[nrTunelu].zajetosc + ROZMIAR_EKIPY <= POJEMNOSC_TUNELU)
+            return true;
+    return false;
+}
+
 void dodajDoTunelu(int nrTunelu, int rozmiarEkipy, kierunki gdzie) {
     if (tunele[nrTunelu].zajetosc + rozmiarEkipy < POJEMNOSC_TUNELU)
         tunele[nrTunelu].zajetosc += rozmiarEkipy;

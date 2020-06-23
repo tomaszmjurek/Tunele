@@ -22,40 +22,46 @@ void mainLoop() {
 void czekajNaWejscie(kierunki gdzie, int zegar) {
     int zapisanyZegar = zegar;
     stanBogacza = czekamNaTunel;
+
+    /* Czekam az zwolni sie jakis tunel */
     int wybranyTunel = znajdzMiejsceWTunelu(gdzie);
-
-    if /* nie ma miejsca */ (wybranyTunel != -1) {
-        stanWatku = czekamNaRelease;
-        while (stanWatku == czekamNaRelease) {
-            // TODO: aktywne czekanie - rozwiazanie najprostrze, moze da się to ulepszyć
+    stanWatku = czekamNaRelease;
+    while /* nie ma miejsca */(wybranyTunel == -1) {
+        //MPI_Recv(local, przekazujeRELEASE)
+        wybranyTunel = znajdzMiejsceWTunelu(gdzie);
+    }
+    stanWatku = ide;
+    
+    /* Rozglaszam gdzie chcę sie dostać i zbieram odpowiedzi */
+    MPI_Broadcast(wybranyTunel, gdzie, REQ);
+    kolejkaDoTunelu.clear();
+    for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
+        MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
+        if (pakiet.nr_tunelu == wybranyTunel && pakiet.proc_zegar < zegar) {
+            kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
+            //sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); // raczej zbedne
         }
-        // stanWatku = ide;
-        czekajNaWejscie(gdzie, zapisanyZegar);
-    } else {
-        MPI_Broadcast(wybranyTunel, gdzie, REQ);
-        kolejkaDoTunelu.clear();
-        for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
-            MPI_Recv(&pakiet, 40 , MPI_PAKIET_T, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
-            if (pakiet.nr_tunelu == wybranyTunel && pakiet.proc_zegar < zegar) {
-                kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
-                //sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); // raczej zbedne
-            }
-        }
-
-        stanWatku = czekamNaInside;
-        while(!kolejkaDoTunelu.empty()) {
-            // TODO: aktywne czekanie, niedobrze
-        }
-        stanWatku = ide;
-
-        //else
-        //dopoki jest kolejka sluchaj inside i usuwaj
-        //masz dostep return, albo koniec funkcji
     }
 
+    /* Czekam az bede mial pierwszenstwo */
+    stanWatku = czekamNaInside;
+    while(!kolejkaDoTunelu.empty()) {
+        debug("stanBogacza: $s stanWatku: %s", stanBogacza, stanWatku);
+        //MPI_Recv(przekazujeINSIDE);
+    }
+    stanWatku = ide;
+
+    /* Czekam az bede mial miejsce */
+    stanWatku = czekamNaRelease;
+    while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
+        debug("stanBogacza: $s stanWatku: %s", stanBogacza, stanWatku);
+        //MPI_Recv(local, przekazujeRELEASE)
+    }
+    stanWatku = ide;
 }
 
 void przejdzTunelem(kierunki gdzie) {
+    stanBogacza = ide;
     //MPI_Send(przygotujPakiet(gdzie), 40, MPI_PAKIET_T, BROADCAST, INSIDE, MPI_COMM_WORLD);
     //usun kolejkeDostepu
     sleep(3);
@@ -88,10 +94,5 @@ void obsluzKolejkeDoTunelu(int proc_id) {
         /* pop_front */
         kolejkaDoTunelu.front() = std::move(kolejkaDoTunelu.back());
         kolejkaDoTunelu.pop_back();
-    }
-
-    if (kolejkaDoTunelu.empty()) {
-        // sprawdz czy jest miejsce w tunelu
-        // mozesz isc, ale nie do konca, bo co jak zajety tunel
     }
 }

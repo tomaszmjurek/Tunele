@@ -31,11 +31,12 @@ void *startWatekKom(void *ptr) {
                 break;
             case INSIDE:
                 debug("Otrzymalem INSIDE...");
-                if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside)
-                   usunZKolejkiDoTuneluJesliIstnieje(pakiet.proc_id);
-                oczekujace--;
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
-                //usuniecie z kolejkiDoTunelu
+                oczekujace--;
+                if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
+                   obsluzKolejkeDoTunelu(pakiet.proc_id);
+                   MPI_Send(0, 10, MPI_PAKIET_T, ID_WATKU_KOM, komunikat, MPI_COMM_WORLD);
+                }
                 break;
             case RELEASE:
                 debug("Otrzymalem RELEASE...");
@@ -70,5 +71,3 @@ void MPI_Broadcast(int nr_tunelu, kierunki gdzie, komunikat komunikat) {
         if (i != id_proc) {
             MPI_Send(&pakiet, 40, MPI_PAKIET_T, i, komunikat, MPI_COMM_WORLD);
         }
-    }
-}
