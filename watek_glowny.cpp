@@ -52,7 +52,6 @@ void czekajNaWejscie(kierunki gdzie) {
     }
 
     /* Czekam az bede mial pierwszenstwo */
-    
     stanWatku = czekamNaInside;
     while(!kolejkaDoTunelu.empty()) {
         debug("Czekam w kolejce do tunelu %d", wybranyTunel);
@@ -63,7 +62,6 @@ void czekajNaWejscie(kierunki gdzie) {
     /* Czekam az bede mial miejsce */
     stanWatku = czekamNaRelease;
     while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
-        // debug("stanBogacza: %d stanWatku: %d", stanBogacza, stanWatku);
         debug("Czekam na miejsce w tunelu %d", wybranyTunel);
         MPI_RecvLocal(PRZEKAZ_RELEASE);
     }
@@ -75,7 +73,9 @@ void przejdzTunelem(kierunki gdzie) {
     stanBogacza = ide;
     //MPI_Send(przygotujPakiet(gdzie), 40, MPI_PAKIET_T, BROADCAST, INSIDE, MPI_COMM_WORLD);
     //usun kolejkeDostepu
-    sleep(3);
+    
+    MPI_Wtime();
+    
     //jesli jestes pierwszy return
     //else czekaj az sie zwolni (RELEASE)
     //wyslij RELEASE

@@ -10,16 +10,17 @@ int zegar = 0;
 stany stanBogacza = ide, stanWatku = ide;
 
 pthread_t watekKom;
-MPI_Datatype MPI_PAKIET_T;
+MPI_Datatype MPI_PAKIET_T; // todo: raczej zbedne
 
-void finalizuj()
+void finalizuj() // testowalem wszystkie te mozliwosci najlepiej dziala dontStop, jest error ale zatzymuje sie sam
 {
-    // pthread_mutex_destroy( &stateMut);
-    /* Czekamy, aż wątek potomny się zakończy */
-    // println("czekam na wątek \"komunikacyjny\"\n" );
-    // pthread_join(threadKom,NULL);
-    // if (rank==0) pthread_join(threadMon,NULL);
-    MPI_Type_free(&MPI_PAKIET_T);
+  //  pthread_detach(watekKom); 
+//     ~watekKom;
+    // pthread_exit(watekKom);
+  //  MPI_Broadcast(-1, brak, zegar, STOP);
+    // pthread_join(watekKom, NULL);
+    dontStop = false; // niedoskonałe, bo musi otrzymac Recv, w praktyce zawsze kiedys dostanie, pytanie jak danilecki chce zeby sie konczylo, po ilus iteracjach czy ctrl + c
+    debug("[MAIN] Bogacz zaraz zniknie"); // todo: fix error
     MPI_Finalize();
 }
 
@@ -30,7 +31,6 @@ void inicjujMPI(int *argc, char *argv[]) {
     if (provided < MPI_THREAD_MULTIPLE) {
         debug("Error - MPI does not provide needed threading level");
         finalizuj();
-        //return x
     }
     MPI_Comm_size(MPI_COMM_WORLD, &LICZBA_EKIP);
     MPI_Comm_rank(MPI_COMM_WORLD, &id_proc);
@@ -69,8 +69,8 @@ int main(int argc, char *argv[]) {
 
     mainLoop(); // ew. osobny watek
 
-    debug("Bogacz znika");
     finalizuj();
+    debug("Bogacz znika");
 
     return 0;
 }

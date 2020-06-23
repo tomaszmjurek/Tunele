@@ -7,7 +7,9 @@ packet_t przygotujPakiet(int nr_tunelu, kierunki gdzie, int zegar);
 void MPI_Broadcast(int nr_tunelu, kierunki gdzie, int zegar, komunikat komunikat);
 void MPI_RecvLocal(komunikat komunikat);
 void MPI_SendLocal(komunikat komunikat);
+void zatrzymajWatekKom();
 
 extern int oczekujace;
+extern bool dontStop;
 
 #endif
