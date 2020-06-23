@@ -15,6 +15,7 @@ enum kierunki {tam, zPowrotem, brak };
 extern int id_proc;
 extern int LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP;
 extern int zegar;
+extern int wybranyTunel;
 // extern int oczekujace;
 
 struct packet_t{

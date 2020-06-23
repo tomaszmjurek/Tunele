@@ -8,7 +8,7 @@
 MPI_Status status;
 vector<int> kolejkaDoTunelu = {}; // wspoldzielenie?
 
-int zapisanyZegar = 0, wybranyTunel = -1;
+int zapisanyZegar;//, wybranyTunel;
 kierunki wybranyKierunek = brak;
 
 packet_t pakiet_glowny;
@@ -16,6 +16,7 @@ packet_t pakiet_glowny;
 void mainLoop() {
     wybranyKierunek = tam;
     czekajNaWejscie(wybranyKierunek);
+    debug("wybrant tunel %d", wybranyTunel); //tu juz 0
     przejdzTunelem(wybranyKierunek);
     // krainaSzczesliwosci();
     // wybranyKierunek = zPowrotem;
@@ -61,20 +62,21 @@ void czekajNaWejscie(kierunki gdzie) {
 
     /* Czekam az bede mial miejsce */
     stanWatku = czekamNaRelease;
+    debug("wybrany tunel %d", wybranyTunel);
     while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
         debug("Czekam na miejsce w tunelu %d", wybranyTunel);
         MPI_RecvLocal(PRZEKAZ_RELEASE);
     }
+    debug("wybrany tunel %d", wybranyTunel); //tu wybrany
     stanWatku = ide;
 }
 
 void przejdzTunelem(kierunki gdzie) {
-    debug("JESTEM W TUNELU");
+    debug("wybrant tunel %d", wybranyTunel); //tu 0
     stanBogacza = ide;
+    debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); //tu 0
     //MPI_Send(przygotujPakiet(gdzie), 40, MPI_PAKIET_T, BROADCAST, INSIDE, MPI_COMM_WORLD);
     //usun kolejkeDostepu
-    
-    MPI_Wtime();
     
     //jesli jestes pierwszy return
     //else czekaj az sie zwolni (RELEASE)

@@ -6,7 +6,7 @@
 using namespace std;
 
 int id_proc, ID_WATKU_KOM, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
-int zegar = 0;
+int zegar = 0, wybranyTunel = 0;
 stany stanBogacza = ide, stanWatku = ide;
 
 pthread_t watekKom;
@@ -20,7 +20,7 @@ void finalizuj() // testowalem wszystkie te mozliwosci najlepiej dziala dontStop
   //  MPI_Broadcast(-1, brak, zegar, STOP);
     // pthread_join(watekKom, NULL);
     dontStop = false; // niedoskonałe, bo musi otrzymac Recv, w praktyce zawsze kiedys dostanie, pytanie jak danilecki chce zeby sie konczylo, po ilus iteracjach czy ctrl + c
-    debug("[MAIN] Bogacz zaraz zniknie"); // todo: fix error
+    debug("[MAIN] Bogacz [%d] zaraz zniknie", id_proc); // todo: fix error
     MPI_Finalize();
 }
 
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 
     ROZMIAR_EKIPY = rand() % 21 + 10; //rand od nowa
 
-    debug("Bogacz gotowy! Tunele: %d, Ekipy: %d, Pojemnosc: %d, Ekipa: %d", LICZBA_TUNELI, LICZBA_EKIP, POJEMNOSC_TUNELU, ROZMIAR_EKIPY);
+    debug("Bogacz %d gotowy! Tunele: %d, Ekipy: %d, Pojemnosc: %d, Ekipa: %d", id_proc, LICZBA_TUNELI, LICZBA_EKIP, POJEMNOSC_TUNELU, ROZMIAR_EKIPY);
 
     pthread_create(&watekKom, NULL, startWatekKom, 0);
 

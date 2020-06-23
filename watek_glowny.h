@@ -13,7 +13,7 @@ void dojdzDoSiebie();
 void obsluzKolejkeDoTunelu(int);
 bool obcyMaPierwszenstwo(packet_t);
 
-extern int zapisanyZegar, wybranyTunel;
+extern int zapisanyZegar;//, wybranyTunel;
 extern kierunki wybranyKierunek; // czy bedzie widziany deklaracja poza main.h
 
 #endif

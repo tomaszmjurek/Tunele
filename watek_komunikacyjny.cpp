@@ -17,7 +17,7 @@ void *startWatekKom(void *ptr) {
       //  int typKomunikatu = status.MPI_TAG; // sprawdzic czy dziala zamiana
         switch(status.MPI_TAG) {
             case REQ:
-                debug("[KOM] Otrzymalem REQ od [%d]", pakiet.proc_id);
+                debug("[KOM] Otrzymalem REQ od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
                 if /* bogacz czeka do tunelu */ (stanBogacza == czekamNaTunel && wybranyTunel != -1) {
                     packet_t pakietWysylany = przygotujPakiet(wybranyTunel, wybranyKierunek, zapisanyZegar);
                     debug("Wysylam ACK do %d", pakiet.proc_id);
@@ -25,7 +25,6 @@ void *startWatekKom(void *ptr) {
                     debug("[KOM] Wyslalem ACK tunel: %d kierunek: %d zegar: %d", wybranyTunel, wybranyKierunek, zapisanyZegar);
                 }
                 oczekujace++;
-                debug("koniec REQ")
                 break;
             case INSIDE:
                 debug("[KOM] Otrzymalem INSIDE...");
