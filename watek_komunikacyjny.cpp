@@ -30,6 +30,7 @@ void *startWatekKom(void *ptr) {
                 debug("[KOM] Otrzymalem INSIDE...");
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 oczekujace--;
+                kolejkaWTunelu[pakiet.nr_tunelu].push_back(id_proc);
                 if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
                    MPI_SendLocal(PRZEKAZ_INSIDE);
@@ -39,14 +40,14 @@ void *startWatekKom(void *ptr) {
             case RELEASE:
                 debug("[KOM] Otrzymalem RELEASE...");
                 usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
-                //warunek z kolejką procesów w Tunelu
+                kolejkaWTuneluPopBack(pakiet);
                 if (stanWatku == czekamNaRelease) {
                     MPI_SendLocal(PRZEKAZ_RELEASE);
                     debug("[KOM] Przekazalem RELEASE do watku_glownego");
                 }
                 break;
             case STOP:
-                debug("[KOM] Otrzymałem STOP. Aktualby zegar: %d", pakiet.proc_zegar);
+                debug("[KOM] Otrzymałem STOP. Aktualny zegar: %d", pakiet.proc_zegar);
                 //zwolnij pamiec, zabij procesy
                 dontStop = false;
                 terminate();
@@ -94,3 +95,4 @@ void MPI_RecvLocal(komunikat komunikat) {
 //     MPI_Send(&pakiet_, sizeof(packet_t), MPI_BYTE, MPI_W, STOP, MPI_COMM_WORLD);
 //     MPI
 // }
+

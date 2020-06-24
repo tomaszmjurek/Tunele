@@ -2,7 +2,8 @@
 #define WATEK_GLOWNY_H
 
 #include <algorithm>
-
+#include <vector>
+using namespace std;
 /* pętla główna aplikacji: zmiany stanów */
 void mainLoop();
 void czekajNaWejscie(kierunki);
