@@ -55,6 +55,7 @@ void *startWatekKom(void *ptr) {
                 debug("[KOM] Otrzymalem błędny komunikat");
         }
     }
+    return 0;
 }
 
 packet_t przygotujPakiet(int nr_tunelu, kierunki gdzie, int zapisanyZegar) {
@@ -72,7 +73,6 @@ void MPI_Broadcast(int nr_tunelu, kierunki gdzie, int zapisanyZegar, komunikat k
     packet_t pakiet_ = przygotujPakiet(nr_tunelu, gdzie, zapisanyZegar);
     for (int i = 0; i < LICZBA_EKIP; i++) {
         if (i != id_proc) {
-            // debug("Wysylam %d do %d", komunikat, i);
             MPI_Send(&pakiet_, sizeof(packet_t), MPI_BYTE, i, komunikat, MPI_COMM_WORLD);
             // debug("MPIBroadcast SEND to process %d", i);
         }
@@ -87,10 +87,3 @@ void MPI_RecvLocal(komunikat komunikat) {
     MPI_Status status;
     MPI_Recv(0, sizeof(int), MPI_INT, ID_WATKU_KOM, komunikat, MPI_COMM_WORLD, &status);
 }
-
-// void MPI_Broadcast() {
-//     packet_t pakiet_ = przygotujPakiet(-1, brak, zegar);
-//     debug("Przygotowalem pakiet tunel %d procID %d", pakiet_.nr_tunelu, pakiet_.proc_id);
-//     MPI_Send(&pakiet_, sizeof(packet_t), MPI_BYTE, MPI_W, STOP, MPI_COMM_WORLD);
-//     MPI
-// }
