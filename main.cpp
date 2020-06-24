@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
     } else {
         LICZBA_TUNELI = 5;
         POJEMNOSC_TUNELU = 40;
+        LICZBA_EKIP =5;
     }
 
     if (POJEMNOSC_TUNELU < ROZMIAR_EKIPY) {

@@ -30,7 +30,7 @@ void czekajNaWejscie(kierunki gdzie) {
     stanBogacza = czekamNaTunel;
 
     /* Czekam az zwolni sie jakis tunel */
-    int wybranyTunel = znajdzMiejsceWTunelu(gdzie);
+    wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     stanWatku = czekamNaRelease;
     while /* nie ma miejsca */(wybranyTunel == -1) {
         debug("Nie ma dla mnie tunelu, czekam az ktos wyjdzie");
