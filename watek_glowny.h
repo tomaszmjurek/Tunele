@@ -16,5 +16,6 @@ bool obcyMaPierwszenstwo(packet_t);
 
 extern int zapisanyZegar;//, wybranyTunel;
 extern kierunki wybranyKierunek; // czy bedzie widziany deklaracja poza main.h
+extern vector<int> kolejkaDoTunelu;
 
 #endif

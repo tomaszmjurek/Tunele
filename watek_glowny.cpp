@@ -8,7 +8,7 @@
 MPI_Status status;
 vector<int> kolejkaDoTunelu = {}; // wspoldzielenie?
 
-int zapisanyZegar;//, wybranyTunel;
+int zapisanyZegar;
 kierunki wybranyKierunek = brak;
 
 packet_t pakiet_glowny;
@@ -69,19 +69,16 @@ void czekajNaWejscie(kierunki gdzie) {
 }
 
 void przejdzTunelem(kierunki gdzie) {
-    debug("wybrant tunel %d", wybranyTunel); //tu 0
     stanBogacza = ide;
     debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); //tu 0
-    zapisanyZegar = zegar;
-    MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
-    while(kolejkaWTunelu[pakiet_glowny.nr_tunelu].front()!= id_proc){
-        stanWatku = czekamNaRelease;// to wystarczy? coś śmierdzi
-    }
-    pakiet_glowny = przygotujPakiet(wybranyTunel,wybranyKierunek,gdzie);
-    MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);    
+    // zapisanyZegar = zegar;
+    // MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
+    // while(kolejkaWTunelu[pakiet_glowny.nr_tunelu].front()!= id_proc){
+    //     stanWatku = czekamNaRelease;// to wystarczy? coś śmierdzi
+    // }
+    // pakiet_glowny = przygotujPakiet(wybranyTunel,wybranyKierunek,gdzie);
+    // MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);    
 }
-    
-
     
     //jesli jestes pierwszy return
     //else czekaj az sie zwolni (RELEASE)
