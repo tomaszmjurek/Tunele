@@ -72,8 +72,16 @@ void przejdzTunelem(kierunki gdzie) {
     debug("wybrant tunel %d", wybranyTunel); //tu 0
     stanBogacza = ide;
     debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); //tu 0
-    //MPI_Send(przygotujPakiet(gdzie), 40, MPI_PAKIET_T, BROADCAST, INSIDE, MPI_COMM_WORLD);
-    //usun kolejkeDostepu
+    zapisanyZegar = zegar;
+    MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
+    while(kolejkaWTunelu[pakiet_glowny.nr_tunelu].front()!= id_proc){
+        stanWatku = czekamNaRelease;// to wystarczy? coś śmierdzi
+    }
+    pakiet_glowny = przygotujPakiet(wybranyTunel,wybranyKierunek,gdzie);
+    MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);    
+}
+    
+
     
     //jesli jestes pierwszy return
     //else czekaj az sie zwolni (RELEASE)
@@ -81,7 +89,6 @@ void przejdzTunelem(kierunki gdzie) {
     
     // pakiet = przygotujPakiet(0 /*numer tunelu*/,gdzie); 
     // MPI_Send(&pakiet, 40, MPI_PAKIET_T, 0/*BROADCAST!*/, RELEASE, MPI_COMM_WORLD);
-}
 
 void krainaSzczesliwosci() {
     debug("Jestem w krainie szczesliwosci");
