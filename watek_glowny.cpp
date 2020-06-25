@@ -16,7 +16,6 @@ packet_t pakiet_glowny;
 void mainLoop() {
     wybranyKierunek = tam;
     czekajNaWejscie(wybranyKierunek);
-    debug("wybrant tunel %d", wybranyTunel); //tu juz 0
     przejdzTunelem(wybranyKierunek);
     // krainaSzczesliwosci();
     // wybranyKierunek = zPowrotem;
@@ -62,12 +61,10 @@ void czekajNaWejscie(kierunki gdzie) {
 
     /* Czekam az bede mial miejsce */
     stanWatku = czekamNaRelease;
-    debug("wybrany tunel %d", wybranyTunel);
     while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
         debug("Czekam na miejsce w tunelu %d", wybranyTunel);
         MPI_RecvLocal(PRZEKAZ_RELEASE);
     }
-    debug("wybrany tunel %d", wybranyTunel); //tu wybrany
     stanWatku = ide;
 }
 
