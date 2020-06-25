@@ -19,6 +19,8 @@ class Tunel {
 extern Tunel * tunele;
 // extern volatile vector<int> kolejkaDoTunelu;
 
-void kolejkaWTuneluPopFront(packet_t pakiet);
+void kolejkaWTuneluPopFront(int nrTunelu, int obcy_proc_id);
+
+void sprawdzCzyPierwszy(packet_t pakiet);
 
 #endif

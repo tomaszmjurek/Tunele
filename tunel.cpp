@@ -1,6 +1,6 @@
 #include "main.h"
 #include "tunel.h"
-
+#include <algorithm>
 Tunel * tunele; /* zmienna globalna */
 // vector<int> kolejkaDoTunelu = {};
 
@@ -58,9 +58,12 @@ void czyscTunele() {
     }
 }
 
-void kolejkaWTuneluPopFront(packet_t pakiet) {
+void kolejkaWTuneluPopFront(int nrTunelu, int obcy_proc_id) {
         /* pop_front */
-        kolejkaWTunelu[pakiet.nr_tunelu].front() = std::move(kolejkaWTunelu[pakiet.nr_tunelu].back());
-        kolejkaWTunelu[pakiet.nr_tunelu].pop_back();
+          if /* vector contains element */ (find(tunele[nrTunelu].kolejkaWTunelu.begin(), tunele[nrTunelu].kolejkaWTunelu.end(), obcy_proc_id) != tunele[nrTunelu].kolejkaWTunelu.end()) {
+
+        tunele[nrTunelu].kolejkaWTunelu.front() = std::move(tunele[nrTunelu].kolejkaWTunelu.back());
+        tunele[nrTunelu].kolejkaWTunelu.pop_back();
+          }
 }
 

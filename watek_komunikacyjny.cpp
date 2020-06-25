@@ -30,7 +30,8 @@ void *startWatekKom(void *ptr) {
                 debug("[KOM] Otrzymalem INSIDE...");
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 oczekujace--;
-                kolejkaWTunelu[pakiet.nr_tunelu].push_back(id_proc);
+                debug("Czy wywale sie w inside?");
+                tunele[pakiet.nr_tunelu].kolejkaWTunelu.push_back(pakiet.proc_id);
                 if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
                    MPI_SendLocal(PRZEKAZ_INSIDE);
@@ -40,7 +41,7 @@ void *startWatekKom(void *ptr) {
             case RELEASE:
                 debug("[KOM] Otrzymalem RELEASE...");
                 usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
-                kolejkaWTuneluPopBack(pakiet);
+                kolejkaWTuneluPopFront(pakiet.nr_tunelu, pakiet.proc_id);
                 if (stanWatku == czekamNaRelease) {
                     MPI_SendLocal(PRZEKAZ_RELEASE);
                     debug("[KOM] Przekazalem RELEASE do watku_glownego");

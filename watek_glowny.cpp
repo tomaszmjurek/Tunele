@@ -69,27 +69,23 @@ void czekajNaWejscie(kierunki gdzie) {
 }
 
 void przejdzTunelem(kierunki gdzie) {
-    debug("wybrant tunel %d", wybranyTunel); //tu 0
     stanBogacza = ide;
     debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); //tu 0
     zapisanyZegar = zegar;
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
-    while(kolejkaWTunelu[pakiet_glowny.nr_tunelu].front()!= id_proc){
+    debug("Zaraz sprawdze czy moge wyjsc");
+   // while(tunele[wybranyTunel].kolejkaWTunelu.front()!= id_proc){
+    while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
+        debug("Jeszcze nie moge wyjsc");
         stanWatku = czekamNaRelease;// to wystarczy? coś śmierdzi
+        MPI_RecvLocal(PRZEKAZ_RELEASE);
     }
-    pakiet_glowny = przygotujPakiet(wybranyTunel,wybranyKierunek,gdzie);
-    MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);    
+    debug("moge wyjsc, ide!");
+    stanWatku = ide;
+
+    MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);  
 }
     
-
-    
-    //jesli jestes pierwszy return
-    //else czekaj az sie zwolni (RELEASE)
-    //wyslij RELEASE
-    
-    // pakiet = przygotujPakiet(0 /*numer tunelu*/,gdzie); 
-    // MPI_Send(&pakiet, 40, MPI_PAKIET_T, 0/*BROADCAST!*/, RELEASE, MPI_COMM_WORLD);
-
 void krainaSzczesliwosci() {
     debug("Jestem w krainie szczesliwosci");
     sleep(5);
@@ -117,3 +113,4 @@ void obsluzKolejkeDoTunelu(int proc_id) {
 bool obcyMaPierwszenstwo(packet_t pakiet_) {
     return pakiet_.proc_zegar > zapisanyZegar || (pakiet_.proc_zegar == zapisanyZegar && pakiet_.proc_id < id_proc);
 }
+
