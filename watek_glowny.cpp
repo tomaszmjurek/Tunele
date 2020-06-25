@@ -71,8 +71,8 @@ void czekajNaWejscie(kierunki gdzie) {
 void przejdzTunelem(kierunki gdzie) {
     stanBogacza = ide;
     debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); //tu 0
-    // zapisanyZegar = zegar;
-    // MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
+    zapisanyZegar = zegar;
+    MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
     // while(kolejkaWTunelu[pakiet_glowny.nr_tunelu].front()!= id_proc){
     //     stanWatku = czekamNaRelease;// to wystarczy? coś śmierdzi
     // }

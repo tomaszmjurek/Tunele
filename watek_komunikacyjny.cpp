@@ -17,13 +17,12 @@ void *startWatekKom(void *ptr) {
         switch(status.MPI_TAG) {
             case REQ:
                 debug("[KOM] Otrzymalem REQ od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
+                oczekujace++;
                 if /* bogacz czeka do tunelu */ (stanBogacza == czekamNaTunel && wybranyTunel != -1) {
                     packet_t pakietWysylany = przygotujPakiet(wybranyTunel, wybranyKierunek, zapisanyZegar);
-                    debug("Wysylam ACK do %d", pakiet.proc_id);
                     MPI_Send(&pakietWysylany, sizeof(packet_t), MPI_BYTE, pakiet.proc_id, ACK, MPI_COMM_WORLD);
                     debug("[KOM] Wyslalem ACK tunel: %d kierunek: %d zegar: %d", wybranyTunel, wybranyKierunek, zapisanyZegar);
-                }
-                oczekujace++;
+                }         
                 break;
             case INSIDE:
                 debug("[KOM] Otrzymalem INSIDE od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
@@ -51,7 +50,7 @@ void *startWatekKom(void *ptr) {
                 debug("[KOM] Otrzymałem STOP. Aktualny zegar: %d", pakiet.proc_zegar);
                 //zwolnij pamiec, zabij procesy
                 dontStop = false;
-                terminate();
+                //terminate(); ?
                 break;
             default:
                 debug("[KOM] Otrzymalem błędny komunikat");
