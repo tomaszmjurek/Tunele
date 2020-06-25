@@ -3,6 +3,7 @@
 #include "tunel.h"
 #include "watek_komunikacyjny.h"
 #include <unistd.h>
+#include <stdio.h>
 #include <algorithm>
 
 MPI_Status status;
@@ -17,7 +18,7 @@ void mainLoop() {
     wybranyKierunek = tam;
     czekajNaWejscie(wybranyKierunek);
     przejdzTunelem(wybranyKierunek);
-    // krainaSzczesliwosci();
+    krainaSzczesliwosci();
     // wybranyKierunek = zPowrotem;
     // czekajNaWejscie(wybranyKierunek);
     // przejdzTunelem(wybranyKierunek);
@@ -41,18 +42,17 @@ void czekajNaWejscie(kierunki gdzie) {
     /* Rozglaszam gdzie chcę sie dostać i zbieram odpowiedzi */
     debug("Oglaszam, ze chce do tunelu %d", wybranyTunel);
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
+    
+    debug("[TEST] oczekujace: ", oczekujace);
+
     kolejkaDoTunelu.clear();
+    stanWatku = czekamNaAck;
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
-        MPI_Recv(&pakiet_glowny, sizeof(packet_t), MPI_BYTE, MPI_ANY_SOURCE, ACK, MPI_COMM_WORLD, &status);
-        if (pakiet_glowny.nr_tunelu == wybranyTunel && obcyMaPierwszenstwo(pakiet_glowny)) {
-            kolejkaDoTunelu.push_back(pakiet_glowny.proc_id); // rezygnuje z zapisaywanie proc_zegar
-            debug("No co Pan sie wpycha");
-            //sort(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end()); // raczej zbedne
-        }
+        MPI_RecvLocal(PRZEKAZ_ACK);
     }
 
     /* Czekam az bede mial pierwszenstwo */
-    stanWatku = czekamNaInside;
+    stanWatku = czekamNaInside; //te moglyby byc atomowe
     while(!kolejkaDoTunelu.empty()) {
         debug("Czekam w kolejce do tunelu %d", wybranyTunel);
         MPI_RecvLocal(PRZEKAZ_INSIDE);
@@ -70,17 +70,25 @@ void czekajNaWejscie(kierunki gdzie) {
 
 void przejdzTunelem(kierunki gdzie) {
     stanBogacza = ide;
-    debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); //tu 0
+    debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); 
     zapisanyZegar = zegar;
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
+
+    // mySleep(100000000);
+
     debug("Zaraz sprawdze czy moge wyjsc");
-   // while(tunele[wybranyTunel].kolejkaWTunelu.front()!= id_proc){
     while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
+        stanWatku = czekamNaRelease;
         debug("Jeszcze nie moge wyjsc");
-        stanWatku = czekamNaRelease;// to wystarczy? coś śmierdzi
         MPI_RecvLocal(PRZEKAZ_RELEASE);
     }
     debug("moge wyjsc, ide!");
+
+    if (kolejkaDoTunelu.empty()) {
+        debug("Koleka jest pusta");
+    } else {
+     debug("Liczba w kolejce %ld", kolejkaDoTunelu.size());
+    }
     stanWatku = ide;
 
     MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);  
@@ -88,7 +96,7 @@ void przejdzTunelem(kierunki gdzie) {
     
 void krainaSzczesliwosci() {
     debug("Jestem w krainie szczesliwosci");
-    sleep(5);
+    // mySleep(20);
 }
 
 void dojdzDoSiebie() {
@@ -100,13 +108,16 @@ void dojdzDoSiebie() {
 /**
  * Jesli proces jest w kolejce usuwa go z niej (tzn usuwa pierwszy, bo pozniejszy by nie wyslal INSIDE)
  */
-void obsluzKolejkeDoTunelu(int proc_id) {
+void obsluzKolejkeDoTunelu(int obcy_proc_id) {
 
-    if /* vector contains element */ (find(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end(), proc_id) != kolejkaDoTunelu.end()) {
+    if /* vector contains element */ (find(kolejkaDoTunelu.begin(), kolejkaDoTunelu.end(), obcy_proc_id) != kolejkaDoTunelu.end()) {
 
         /* pop_front */
         kolejkaDoTunelu.front() = std::move(kolejkaDoTunelu.back());
         kolejkaDoTunelu.pop_back();
+        debug("%d usuniety z kolejki do tunelu", obcy_proc_id)
+    } else {
+        debug("RELEASE ale nie bylo w kolejce");
     }
 }
 

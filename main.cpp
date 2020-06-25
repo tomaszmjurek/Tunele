@@ -3,6 +3,8 @@
 #include "watek_komunikacyjny.h"
 #include "tunel.h"
 #include <time.h>
+#include <stdio.h>
+#include <unistd.h>
 using namespace std;
 
 int id_proc, ID_WATKU_KOM, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
@@ -19,9 +21,20 @@ void finalizuj() // testowalem wszystkie te mozliwosci najlepiej dziala dontStop
     // pthread_exit(watekKom);
   //  MPI_Broadcast(-1, brak, zegar, STOP);
     // pthread_join(watekKom, NULL);
+    MPI_Barrier(MPI_COMM_WORLD);
     dontStop = false; // niedoskonałe, bo musi otrzymac Recv, w praktyce zawsze kiedys dostanie, pytanie jak danilecki chce zeby sie konczylo, po ilus iteracjach czy ctrl + c
     debug("[MAIN] Bogacz [%d] zaraz zniknie", id_proc); // todo: fix error
     MPI_Finalize();
+}
+
+void mySleep(int time) {
+    int j = 0;
+    double x = 0.0, y = 0.1;
+    while (j < time * 10000)
+    {
+        x *= x / y;
+        j++;
+    }
 }
 
 void inicjujMPI(int *argc, char *argv[]) {
@@ -69,6 +82,7 @@ int main(int argc, char *argv[]) {
 
     pthread_create(&watekKom, NULL, startWatekKom, 0);
 
+    mySleep(3);
     mainLoop();
 
     finalizuj();

@@ -13,10 +13,14 @@ packet_t pakiet; //czy nie zerowac regularnie
 void *startWatekKom(void *ptr) {
     MPI_Status status;
     while (dontStop) {
+        debug("[KOM] Odbieranie komunikatów w gotowości");
+        // oczekujace++; test
         MPI_Recv(&pakiet, sizeof(packet_t), MPI_BYTE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         switch(status.MPI_TAG) {
             case REQ:
                 debug("[KOM] Otrzymalem REQ od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
+                // debug("Dodaje do kolejki na probe");
+                // kolejkaDoTunelu.push_back(pakiet.proc_id);
                 oczekujace++;
                 if /* bogacz czeka do tunelu */ (stanBogacza == czekamNaTunel && wybranyTunel != -1) {
                     packet_t pakietWysylany = przygotujPakiet(wybranyTunel, wybranyKierunek, zapisanyZegar);
@@ -28,7 +32,6 @@ void *startWatekKom(void *ptr) {
                 debug("[KOM] Otrzymalem INSIDE od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 oczekujace--;
-                debug("Czy wywale sie w inside?");
                 tunele[pakiet.nr_tunelu].kolejkaWTunelu.push_back(pakiet.proc_id);
                 if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
                    debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); 
@@ -47,14 +50,23 @@ void *startWatekKom(void *ptr) {
                     debug("[KOM] Przekazalem RELEASE do watku_glownego");
                 }
                 break;
+            case ACK:
+                debug("[KOM] Otrzymalem ACK od [%d]", pakiet.proc_id);
+                if (stanWatku == czekamNaAck) {
+                    if (pakiet.nr_tunelu == wybranyTunel && obcyMaPierwszenstwo(pakiet)) {
+                        kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
+                        debug("No co Pan sie wpycha");
+                    }
+                    MPI_SendLocal(PRZEKAZ_ACK);
+                }
             case STOP:
                 debug("[KOM] Otrzymałem STOP. Aktualny zegar: %d", pakiet.proc_zegar);
                 //zwolnij pamiec, zabij procesy
                 dontStop = false;
-                //terminate(); ?
+                terminate(); //todo remove?
                 break;
             default:
-                debug("[KOM] Otrzymalem błędny komunikat");
+                debug("[KOM] Otrzymalem błędny komunikat o tagu %d", status.MPI_TAG);
         }
     }
     return 0;
