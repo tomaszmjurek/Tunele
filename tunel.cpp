@@ -64,6 +64,6 @@ void kolejkaWTuneluPopFront(int nrTunelu, int obcy_proc_id) {
 
         tunele[nrTunelu].kolejkaWTunelu.front() = std::move(tunele[nrTunelu].kolejkaWTunelu.back());
         tunele[nrTunelu].kolejkaWTunelu.pop_back();
-          }
+    }
 }
 

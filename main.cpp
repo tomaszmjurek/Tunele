@@ -21,9 +21,11 @@ void finalizuj() // testowalem wszystkie te mozliwosci najlepiej dziala dontStop
     // pthread_exit(watekKom);
   //  MPI_Broadcast(-1, brak, zegar, STOP);
     // pthread_join(watekKom, NULL);
-    MPI_Barrier(MPI_COMM_WORLD);
+    
     dontStop = false; // niedoskonałe, bo musi otrzymac Recv, w praktyce zawsze kiedys dostanie, pytanie jak danilecki chce zeby sie konczylo, po ilus iteracjach czy ctrl + c
     debug("[MAIN] Bogacz [%d] zaraz zniknie", id_proc); // todo: fix error
+    MPI_Barrier(MPI_COMM_WORLD);
+    // if (id_proc == 0) wait
     MPI_Finalize();
 }
 
@@ -82,7 +84,7 @@ int main(int argc, char *argv[]) {
 
     pthread_create(&watekKom, NULL, startWatekKom, 0);
 
-    mySleep(3);
+    MPI_Barrier(MPI_COMM_WORLD);
     mainLoop();
 
     finalizuj();

@@ -19,6 +19,7 @@ void mainLoop() {
     czekajNaWejscie(wybranyKierunek);
     przejdzTunelem(wybranyKierunek);
     krainaSzczesliwosci();
+    MPI_Barrier(MPI_COMM_WORLD);
     // wybranyKierunek = zPowrotem;
     // czekajNaWejscie(wybranyKierunek);
     // przejdzTunelem(wybranyKierunek);
@@ -43,7 +44,7 @@ void czekajNaWejscie(kierunki gdzie) {
     debug("Oglaszam, ze chce do tunelu %d", wybranyTunel);
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
     
-    debug("[TEST] oczekujace: ", oczekujace);
+    debug("[TEST] oczekujace: %d", oczekujace);
 
     kolejkaDoTunelu.clear();
     stanWatku = czekamNaAck;
@@ -93,10 +94,12 @@ void przejdzTunelem(kierunki gdzie) {
 
     MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);  
 }
-    
+
+#include <unistd.h>
 void krainaSzczesliwosci() {
     debug("Jestem w krainie szczesliwosci");
-    // mySleep(20);
+   // sleep(100000);
+    debug("Koniec spanka");
 }
 
 void dojdzDoSiebie() {

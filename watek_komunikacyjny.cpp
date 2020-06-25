@@ -11,10 +11,9 @@ bool dontStop = true;
 packet_t pakiet; //czy nie zerowac regularnie
 
 void *startWatekKom(void *ptr) {
+    debug("[KOM] Odbieranie komunikatów w gotowości");
     MPI_Status status;
     while (dontStop) {
-        debug("[KOM] Odbieranie komunikatów w gotowości");
-        // oczekujace++; test
         MPI_Recv(&pakiet, sizeof(packet_t), MPI_BYTE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         switch(status.MPI_TAG) {
             case REQ:
@@ -55,7 +54,7 @@ void *startWatekKom(void *ptr) {
                 if (stanWatku == czekamNaAck) {
                     if (pakiet.nr_tunelu == wybranyTunel && obcyMaPierwszenstwo(pakiet)) {
                         kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
-                        debug("No co Pan sie wpycha");
+                        debug("[TEST] No co Pan sie wpycha");
                     }
                     MPI_SendLocal(PRZEKAZ_ACK);
                 }
