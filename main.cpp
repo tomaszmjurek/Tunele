@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         LICZBA_TUNELI = atoi(argv[1]);
         POJEMNOSC_TUNELU = atoi(argv[2]);
     } else {
-        LICZBA_TUNELI = 5;
+        LICZBA_TUNELI = 2;
         POJEMNOSC_TUNELU = 45;
     }
 
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 
     pthread_create(&watekKom, NULL, startWatekKom, 0);
 
-    mainLoop(); // ew. osobny watek
+    mainLoop();
 
     finalizuj();
     debug("Bogacz znika");

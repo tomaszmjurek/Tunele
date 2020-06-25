@@ -14,32 +14,32 @@ void *startWatekKom(void *ptr) {
     MPI_Status status;
     while (dontStop) {
         MPI_Recv(&pakiet, sizeof(packet_t), MPI_BYTE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-      //  int typKomunikatu = status.MPI_TAG; // sprawdzic czy dziala zamiana
         switch(status.MPI_TAG) {
             case REQ:
                 debug("[KOM] Otrzymalem REQ od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
+                oczekujace++;
                 if /* bogacz czeka do tunelu */ (stanBogacza == czekamNaTunel && wybranyTunel != -1) {
                     packet_t pakietWysylany = przygotujPakiet(wybranyTunel, wybranyKierunek, zapisanyZegar);
-                    debug("Wysylam ACK do %d", pakiet.proc_id);
                     MPI_Send(&pakietWysylany, sizeof(packet_t), MPI_BYTE, pakiet.proc_id, ACK, MPI_COMM_WORLD);
                     debug("[KOM] Wyslalem ACK tunel: %d kierunek: %d zegar: %d", wybranyTunel, wybranyKierunek, zapisanyZegar);
-                }
-                oczekujace++;
+                }         
                 break;
             case INSIDE:
-                debug("[KOM] Otrzymalem INSIDE...");
+                debug("[KOM] Otrzymalem INSIDE od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 oczekujace--;
                 debug("Czy wywale sie w inside?");
                 tunele[pakiet.nr_tunelu].kolejkaWTunelu.push_back(pakiet.proc_id);
                 if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
+                   debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); 
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
+                   debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size());
                    MPI_SendLocal(PRZEKAZ_INSIDE);
                    debug("[KOM] Przekazalem INSIDE do watku_glownego");
                 }
                 break;
             case RELEASE:
-                debug("[KOM] Otrzymalem RELEASE...");
+                debug("[KOM] Otrzymalem RELEASE od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
                 usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 kolejkaWTuneluPopFront(pakiet.nr_tunelu, pakiet.proc_id);
                 if (stanWatku == czekamNaRelease) {
@@ -51,7 +51,7 @@ void *startWatekKom(void *ptr) {
                 debug("[KOM] Otrzymałem STOP. Aktualny zegar: %d", pakiet.proc_zegar);
                 //zwolnij pamiec, zabij procesy
                 dontStop = false;
-                terminate();
+                //terminate(); ?
                 break;
             default:
                 debug("[KOM] Otrzymalem błędny komunikat");

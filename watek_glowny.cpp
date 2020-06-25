@@ -8,7 +8,7 @@
 MPI_Status status;
 vector<int> kolejkaDoTunelu = {}; // wspoldzielenie?
 
-int zapisanyZegar;//, wybranyTunel;
+int zapisanyZegar;
 kierunki wybranyKierunek = brak;
 
 packet_t pakiet_glowny;
