@@ -58,3 +58,9 @@ void czyscTunele() {
     }
 }
 
+void kolejkaWTuneluPopFront(packet_t pakiet) {
+        /* pop_front */
+        kolejkaWTunelu[pakiet.nr_tunelu].front() = std::move(kolejkaWTunelu[pakiet.nr_tunelu].back());
+        kolejkaWTunelu[pakiet.nr_tunelu].pop_back();
+}
+
