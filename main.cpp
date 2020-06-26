@@ -5,6 +5,10 @@
 #include <time.h>
 #include <stdio.h>
 #include <unistd.h>
+
+#include <time.h>
+#include <mpi.h>
+// #include <typeinfo>
 using namespace std;
 
 int id_proc, ID_WATKU_KOM, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
@@ -53,7 +57,7 @@ void inicjujMPI(int *argc, char *argv[]) {
 
 
 int main(int argc, char *argv[]) {
-
+    sleep(1000);
     inicjujMPI(&argc, argv);
 
     // Przygotowanie danych

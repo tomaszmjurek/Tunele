@@ -55,6 +55,7 @@ void czekajNaWejscie(kierunki gdzie) {
     stanWatku = czekamNaAck;
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
         MPI_RecvLocal(PRZEKAZ_ACK);
+        debug("TEST Dostalem ACK lokalne");
     }
 
     /* Czekam az bede mial pierwszenstwo */

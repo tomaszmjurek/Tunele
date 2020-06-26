@@ -12,6 +12,7 @@ packet_t pakiet; //czy nie zerowac regularnie
 
 void *startWatekKom(void *ptr) {
     debug("[KOM] Odbieranie komunikatów w gotowości");
+  //  int *sources[5] = {1, 2, 3, 4, 5};
     MPI_Status status;
     while (dontStop) {
         MPI_Recv(&pakiet, sizeof(packet_t), MPI_BYTE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -20,11 +21,12 @@ void *startWatekKom(void *ptr) {
                 debug("[KOM] Otrzymalem REQ od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
                 // debug("Dodaje do kolejki na probe");
                 // kolejkaDoTunelu.push_back(pakiet.proc_id);
-                oczekujace++;
+                oczekujace++; 
                 if /* bogacz czeka do tunelu */ (stanBogacza == czekamNaTunel && wybranyTunel != -1) {
                     packet_t pakietWysylany = przygotujPakiet(wybranyTunel, wybranyKierunek, zapisanyZegar);
+                    debug("Wysylam ACK do %d", pakiet.proc_id);
                     MPI_Send(&pakietWysylany, sizeof(packet_t), MPI_BYTE, pakiet.proc_id, ACK, MPI_COMM_WORLD);
-                    debug("[KOM] Wyslalem ACK tunel: %d kierunek: %d zegar: %d", wybranyTunel, wybranyKierunek, zapisanyZegar);
+                    debug("[KOM] Wyslalem ACK do [%d] tunel: %d kierunek: %d zegar: %d", pakiet.proc_id, wybranyTunel, wybranyKierunek, zapisanyZegar);
                 }         
                 break;
             case INSIDE:
@@ -95,10 +97,13 @@ void MPI_Broadcast(int nr_tunelu, kierunki gdzie, int zapisanyZegar, komunikat k
 }
 // Sendlocal do wymiany na pthread_cond_wait
 void MPI_SendLocal(komunikat komunikat) {
-    MPI_Send(0, sizeof(int), MPI_INT, ID_WATKU_KOM, komunikat, MPI_COMM_WORLD);
+    MPI_Send(0, sizeof(int), MPI_INT, id_proc, komunikat, MPI_COMM_WORLD); //ID_WATKU_KOM
 }
 
 void MPI_RecvLocal(komunikat komunikat) {
-    MPI_Status status;
-    MPI_Recv(0, sizeof(int), MPI_INT, ID_WATKU_KOM, komunikat, MPI_COMM_WORLD, &status);
+    MPI_Status status_;
+    int signal;
+    debug("TEST id watku kom %d Recv Local ?", ID_WATKU_KOM);
+    MPI_Recv(&signal, sizeof(int), MPI_INT, id_proc, komunikat, MPI_COMM_WORLD, &status_); //ID_WATKU_KOM
+    debug("TEST RecvLocal OK");
 }
