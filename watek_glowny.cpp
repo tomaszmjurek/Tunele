@@ -28,11 +28,16 @@ void mainLoop() {
 
 void czekajNaWejscie(kierunki gdzie) {
     zapisanyZegar = zegar;
+
+    debug("Stan zegara: %d",zegar);
+
     stanBogacza = czekamNaTunel;
 
     /* Czekam az zwolni sie jakis tunel */
     wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     stanWatku = czekamNaRelease;
+    zwiekszZegar();
+    debug("Stan zegara: %d",zegar);
     while /* nie ma miejsca */(wybranyTunel == -1) {
         debug("Nie ma dla mnie tunelu, czekam az ktos wyjdzie");
         MPI_RecvLocal(PRZEKAZ_RELEASE);
@@ -70,9 +75,11 @@ void czekajNaWejscie(kierunki gdzie) {
 }
 
 void przejdzTunelem(kierunki gdzie) {
+    zwiekszZegar();
+    debug("Stan zegara: %d",zegar);
     stanBogacza = ide;
     debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); 
-    zapisanyZegar = zegar;
+    zapisanyZegar = zegar; // czemu to służyło?
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
 
     // mySleep(100000000);
@@ -97,12 +104,16 @@ void przejdzTunelem(kierunki gdzie) {
 
 #include <unistd.h>
 void krainaSzczesliwosci() {
+    zwiekszZegar();
+    debug("Stan zegara: %d",zegar);
     debug("Jestem w krainie szczesliwosci");
    // sleep(100000);
     debug("Koniec spanka");
 }
 
 void dojdzDoSiebie() {
+    zwiekszZegar();
+    debug("Stan zegara: %d",zegar);
     debug("Dochodze do siebie");
     sleep(5);
 }
@@ -128,3 +139,6 @@ bool obcyMaPierwszenstwo(packet_t pakiet_) {
     return pakiet_.proc_zegar > zapisanyZegar || (pakiet_.proc_zegar == zapisanyZegar && pakiet_.proc_id < id_proc);
 }
 
+void zwiekszZegar(){
+    zegar++;
+}

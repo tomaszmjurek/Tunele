@@ -36,7 +36,7 @@ void *startWatekKom(void *ptr) {
                    debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); 
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
                    debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size());
-                   MPI_SendLocal(PRZEKAZ_INSIDE);
+                //   MPI_SendLocal(PRZEKAZ_INSIDE);
                    debug("[KOM] Przekazalem INSIDE do watku_glownego");
                 }
                 break;
@@ -45,7 +45,7 @@ void *startWatekKom(void *ptr) {
                 usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 kolejkaWTuneluPopFront(pakiet.nr_tunelu, pakiet.proc_id);
                 if (stanWatku == czekamNaRelease) {
-                    MPI_SendLocal(PRZEKAZ_RELEASE);
+                //    MPI_SendLocal(PRZEKAZ_RELEASE);
                     debug("[KOM] Przekazalem RELEASE do watku_glownego");
                 }
                 break;
@@ -56,10 +56,12 @@ void *startWatekKom(void *ptr) {
                         kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
                         debug("[TEST] No co Pan sie wpycha");
                     }
-                    MPI_SendLocal(PRZEKAZ_ACK);
+                //    MPI_SendLocal(PRZEKAZ_ACK);
                 }
+                break;
             case STOP:
-                debug("[KOM] Otrzymałem STOP. Aktualny zegar: %d", pakiet.proc_zegar);
+                debug("Otrzymałem stop od id_proc %d", pakiet.proc_id);
+                debug("[KOM] Otrzymałem STOP. Aktualny zegar: %d", zegar);
                 //zwolnij pamiec, zabij procesy
                 dontStop = false;
                 terminate(); //todo remove?
@@ -91,7 +93,7 @@ void MPI_Broadcast(int nr_tunelu, kierunki gdzie, int zapisanyZegar, komunikat k
         }
     }
 }
-
+// Sendlocal do wymiany na pthread_cond_wait
 void MPI_SendLocal(komunikat komunikat) {
     MPI_Send(0, sizeof(int), MPI_INT, ID_WATKU_KOM, komunikat, MPI_COMM_WORLD);
 }

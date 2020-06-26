@@ -14,6 +14,7 @@ void dojdzDoSiebie();
 
 void obsluzKolejkeDoTunelu(int);
 bool obcyMaPierwszenstwo(packet_t);
+void zwiekszZegar();
 
 extern int zapisanyZegar;//, wybranyTunel;
 extern kierunki wybranyKierunek; // czy bedzie widziany deklaracja poza main.h
