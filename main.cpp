@@ -3,10 +3,7 @@
 #include "watek_komunikacyjny.h"
 #include "tunel.h"
 #include <time.h>
-// #include <stdio.h>
 #include <unistd.h>
-// #include <time.h>
-// #include <mpi.h>
 using namespace std;
 
 int id_proc, ID_WATKU_KOM, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
@@ -33,7 +30,7 @@ void inicjujMPI(int *argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &id_proc);
 }
 
-
+// argumenty opcjonalne: LICZBA_TUNELI POJEMNOŚĆ_TUNELI
 int main(int argc, char *argv[]) {
     inicjujMPI(&argc, argv);
 
@@ -52,14 +49,15 @@ int main(int argc, char *argv[]) {
     srand(time(NULL) + id_proc);
     ROZMIAR_EKIPY = rand() % 21 + 10;
 
-    debug("Bogacz [%d] gotowy! Tunele: %d, Pojemnosc po: %d, Ekipy: %d,  Moja ekipa: %d", 
-                    id_proc, LICZBA_TUNELI, POJEMNOSC_TUNELU, LICZBA_EKIP, ROZMIAR_EKIPY);
-
     if (POJEMNOSC_TUNELU < ROZMIAR_EKIPY) {
         debug("Pojemność tunelu za mała, zalecane 30-70");
         finalizuj();
         return 1;
     }
+
+    debug("Bogacz [%d] gotowy! Tunele: %d, Pojemnosc po: %d, Ekipy: %d,  Moja ekipa: %d", 
+                    id_proc, LICZBA_TUNELI, POJEMNOSC_TUNELU, LICZBA_EKIP, ROZMIAR_EKIPY);
+
 
     tunele = new Tunel [LICZBA_TUNELI];
     czyscTunele();

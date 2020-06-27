@@ -8,8 +8,8 @@
 
 MPI_Status status;
 int zapisanyZegar; 
-pthread_cond_t PRZEKAZ_RELEASE, PRZEKAZ_INSIDE, PRZEKAZ_ACK; // init
-pthread_mutex_t mutex; //init
+pthread_cond_t PRZEKAZ_RELEASE, PRZEKAZ_INSIDE, PRZEKAZ_ACK;
+pthread_mutex_t mutex;
 
 vector<int> kolejkaDoTunelu = {};
 
@@ -56,7 +56,6 @@ void czekajNaWejscie(kierunki gdzie) {
     kolejkaDoTunelu.clear();
     
     debug("Liczba oczekujacych: %d", oczekujace);
-    // oczekujace_lokalnie = oczekujace;
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
         debug("Czekam na ACK");
         ret = pthread_cond_wait(&PRZEKAZ_ACK, &mutex);
@@ -83,7 +82,7 @@ void czekajNaWejscie(kierunki gdzie) {
 void przejdzTunelem(kierunki gdzie) {
     zwiekszZegar();
     stanBogacza = ide;
-    debug("JESTEM W TUNELU %d kierunek %d zegar %d", (wybranyTunel == 0 ? tam : zPowrotem), wybranyKierunek, zegar); 
+    debug("JESTEM W TUNELU %s kierunek %d zegar %d", (wybranyTunel == 0 ? "tam" : "zPowrotem"), wybranyKierunek, zegar); 
     MPI_Broadcast(wybranyTunel, gdzie, zegar, INSIDE);
     dodajSiebieDoTunelu(wybranyTunel);
     sleep(2);
