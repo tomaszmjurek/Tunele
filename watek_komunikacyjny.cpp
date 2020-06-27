@@ -57,15 +57,14 @@ void *startWatekKom(void *ptr) {
                         debug("Bogacz [%d] ma pierwszenstwo, bezczelny", pakiet.proc_id);
                     }
                     pthread_cond_broadcast(&PRZEKAZ_ACK);
-                    this_thread::sleep_for(chrono::milliseconds(50));
-                    przekazaneACK++;
+                    this_thread::sleep_for(chrono::milliseconds(50)); // bez tego watek_glowny nie nadąża
                     debug("[KOM] Przekazałem ACK do watku_glownego");
                 }
                 break;
             case STOP:
                 debug("[KOM] Otrzymałem STOP od %d. Aktualny zegar: %d", pakiet.proc_id, zegar);
                 dontStop = false;
-                terminate(); // potrzebne?
+                terminate();
                 break;
             default:
                 debug("[KOM] Otrzymalem błędny komunikat o tagu %d", status.MPI_TAG);

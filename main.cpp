@@ -3,12 +3,10 @@
 #include "watek_komunikacyjny.h"
 #include "tunel.h"
 #include <time.h>
-#include <stdio.h>
+// #include <stdio.h>
 #include <unistd.h>
-
-#include <time.h>
-#include <mpi.h>
-// #include <typeinfo>
+// #include <time.h>
+// #include <mpi.h>
 using namespace std;
 
 int id_proc, ID_WATKU_KOM, LICZBA_TUNELI, POJEMNOSC_TUNELU, ROZMIAR_EKIPY, LICZBA_EKIP; /* zmienne statyczne globalne */
@@ -16,7 +14,6 @@ int zegar = 0, wybranyTunel = 0;
 stany stanBogacza = ide, stanWatku = ide;
 
 pthread_t watekKom;
-MPI_Datatype MPI_PAKIET_T; // todo: raczej zbedne
 
 void finalizuj() {
     dontStop = false;

@@ -7,7 +7,6 @@ packet_t przygotujPakiet(int nr_tunelu, kierunki gdzie, int zegar);
 void MPI_Broadcast(int nr_tunelu, kierunki gdzie, int zegar, komunikat komunikat);
 
 extern int oczekujace;
-extern int przekazaneACK;
 extern bool dontStop;
 
 #endif

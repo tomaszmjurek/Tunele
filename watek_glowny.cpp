@@ -11,7 +11,7 @@ int zapisanyZegar;
 pthread_cond_t PRZEKAZ_RELEASE, PRZEKAZ_INSIDE, PRZEKAZ_ACK; // init
 pthread_mutex_t mutex; //init
 
-vector<int> kolejkaDoTunelu = {}; // wspoldzielenie?
+vector<int> kolejkaDoTunelu = {};
 
 kierunki wybranyKierunek = brak;
 
@@ -54,7 +54,6 @@ void czekajNaWejscie(kierunki gdzie) {
     stanWatku = czekamNaAck;
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
     kolejkaDoTunelu.clear();
-    przekazaneACK = 0;
     
     debug("Liczba oczekujacych: %d", oczekujace);
     // oczekujace_lokalnie = oczekujace;
@@ -69,8 +68,7 @@ void czekajNaWejscie(kierunki gdzie) {
     while(!kolejkaDoTunelu.empty()) {
         debug("Czekam w kolejce do tunelu %d", wybranyTunel);
         ret = pthread_cond_wait(&PRZEKAZ_INSIDE, &mutex);
-    }
-    
+    }  
     stanWatku = ide;
 
     /* Czekam az bede mial miejsce */
@@ -85,7 +83,7 @@ void czekajNaWejscie(kierunki gdzie) {
 void przejdzTunelem(kierunki gdzie) {
     zwiekszZegar();
     stanBogacza = ide;
-    debug("JESTEM W TUNELU %d do %d zegar %d", wybranyTunel, wybranyKierunek, zegar); 
+    debug("JESTEM W TUNELU %d kierunek %d zegar %d", (wybranyTunel == 0 ? tam : zPowrotem), wybranyKierunek, zegar); 
     MPI_Broadcast(wybranyTunel, gdzie, zegar, INSIDE);
     dodajSiebieDoTunelu(wybranyTunel);
     sleep(2);
@@ -101,7 +99,6 @@ void przejdzTunelem(kierunki gdzie) {
     MPI_Broadcast(wybranyTunel, gdzie, zegar,RELEASE);  
 }
 
-// #include <unistd.h>
 void krainaSzczesliwosci() {
     zwiekszZegar();
     debug("Jestem w krainie szczesliwosci! Zegar: %d", zegar);
@@ -126,10 +123,6 @@ void obsluzKolejkeDoTunelu(int obcy_proc_id) {
         /* pop_front */
         kolejkaDoTunelu.front() = std::move(kolejkaDoTunelu.back());
         kolejkaDoTunelu.pop_back();
-        debug("%d usuniety z kolejki do tunelu", obcy_proc_id)
-    } else {
-        debug("RELEASE ale nie bylo w kolejce");
-    }
 }
 
 bool obcyMaPierwszenstwo(packet_t pakiet_) {
