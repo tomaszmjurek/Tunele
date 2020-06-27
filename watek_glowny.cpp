@@ -20,15 +20,16 @@ packet_t pakiet_glowny;
 int ret; // kody od pthread_cond_wait
 int oczekujace_lokalnie;
 void mainLoop() {
-    while(1){
-    wybranyKierunek = tam;
-    czekajNaWejscie(wybranyKierunek);
-    przejdzTunelem(wybranyKierunek);
-    krainaSzczesliwosci();
-    wybranyKierunek = zPowrotem;
-    czekajNaWejscie(wybranyKierunek);
-    przejdzTunelem(wybranyKierunek);
-    dojdzDoSiebie();
+    while (true) {
+        wybranyKierunek = tam;
+        czekajNaWejscie(wybranyKierunek);
+        przejdzTunelem(wybranyKierunek);
+        krainaSzczesliwosci();
+        MPI_Barrier(MPI_COMM_WORLD);
+        wybranyKierunek = zPowrotem;
+        czekajNaWejscie(wybranyKierunek);
+        przejdzTunelem(wybranyKierunek);
+        dojdzDoSiebie();
     }
 }
 
@@ -65,7 +66,7 @@ void czekajNaWejscie(kierunki gdzie) {
     }
 
     /* Czekam az bede mial pierwszenstwo */
- 
+    
     stanWatku = czekamNaInside; 
     while(!kolejkaDoTunelu.empty()) {
         debug("Czekam w kolejce do tunelu %d", wybranyTunel);

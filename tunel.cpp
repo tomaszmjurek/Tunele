@@ -43,7 +43,7 @@ void dodajDoTunelu(int nrTunelu, int rozmiarEkipy, kierunki gdzie) {
 }
 
 void usunZTunelu(int nrTunelu, int rozmiarEkipy, kierunki gdzie){
-    if (tunele[nrTunelu].zajetosc - rozmiarEkipy > 0)
+    if (tunele[nrTunelu].zajetosc - rozmiarEkipy >= 0)
         tunele[nrTunelu].zajetosc -= rozmiarEkipy;
 
     if (tunele[nrTunelu].zajetosc == 0)
