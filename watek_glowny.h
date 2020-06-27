@@ -16,8 +16,8 @@ void obsluzKolejkeDoTunelu(int);
 bool obcyMaPierwszenstwo(packet_t);
 void zwiekszZegar();
 
-extern int zapisanyZegar;//, wybranyTunel;
-extern kierunki wybranyKierunek; // czy bedzie widziany deklaracja poza main.h
+extern int zapisanyZegar;
+extern kierunki wybranyKierunek;
 extern vector<int> kolejkaDoTunelu;
 
 extern pthread_cond_t PRZEKAZ_RELEASE, PRZEKAZ_INSIDE, PRZEKAZ_ACK;

@@ -2,7 +2,6 @@
 #include "tunel.h"
 #include <algorithm>
 Tunel * tunele; /* zmienna globalna */
-// vector<int> kolejkaDoTunelu = {};
 
 /**
  * sprawdza najpiew tunel bazujac na id_procesu,

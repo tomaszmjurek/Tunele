@@ -1,14 +1,15 @@
 #include "main.h"
-#include <string>
-using namespace std;
 #include "watek_komunikacyjny.h"
 #include "watek_glowny.h"
 #include "tunel.h"
+#include <string>
+
+using namespace std;
 
 int oczekujace = 0;
 bool dontStop = true;
 
-packet_t pakiet; //czy nie zerowac regularnie
+packet_t pakiet;
 
 void *startWatekKom(void *ptr) {
     debug("[KOM] Odbieranie komunikatów w gotowości");
@@ -19,12 +20,9 @@ void *startWatekKom(void *ptr) {
         switch(status.MPI_TAG) {
             case REQ:
                 debug("[KOM] Otrzymalem REQ od [%d] tunel %d", pakiet.proc_id, pakiet.nr_tunelu);
-                // debug("Dodaje do kolejki na probe");
-                // kolejkaDoTunelu.push_back(pakiet.proc_id);
                 oczekujace++; 
                 if /* bogacz czeka do tunelu */ (stanBogacza == czekamNaTunel && wybranyTunel != -1) {
                     packet_t pakietWysylany = przygotujPakiet(wybranyTunel, wybranyKierunek, zapisanyZegar);
-                    debug("Wysylam ACK do %d", pakiet.proc_id);
                     MPI_Send(&pakietWysylany, sizeof(packet_t), MPI_BYTE, pakiet.proc_id, ACK, MPI_COMM_WORLD);
                     debug("[KOM] Wyslalem ACK do [%d] tunel: %d kierunek: %d zegar: %d", pakiet.proc_id, wybranyTunel, wybranyKierunek, zapisanyZegar);
                 }         
@@ -36,10 +34,9 @@ void *startWatekKom(void *ptr) {
                 tunele[pakiet.nr_tunelu].kolejkaWTunelu.push_back(pakiet.proc_id);
                 // todo: prawdopodobnie stanyWatku beda zbedne dzieki cond_broadcast
                 if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
-                   debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); 
+                   debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
-                   debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size());
-                //   MPI_SendLocal(PRZEKAZ_INSIDE);
+                   debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
                    pthread_cond_broadcast(&PRZEKAZ_INSIDE);
                    debug("[KOM] Przekazalem INSIDE do watku_glownego");
                 }
@@ -49,7 +46,6 @@ void *startWatekKom(void *ptr) {
                 usunZTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 kolejkaWTuneluPopFront(pakiet.nr_tunelu, pakiet.proc_id);
                 if (stanWatku == czekamNaRelease) {
-                //    MPI_SendLocal(PRZEKAZ_RELEASE);
                     pthread_cond_broadcast(&PRZEKAZ_RELEASE);
                     debug("[KOM] Przekazalem RELEASE do watku_glownego");
                 }
@@ -58,19 +54,17 @@ void *startWatekKom(void *ptr) {
                 debug("[KOM] Otrzymalem ACK od [%d]", pakiet.proc_id);
                 if (stanWatku == czekamNaAck) {
                     if (pakiet.nr_tunelu == wybranyTunel && obcyMaPierwszenstwo(pakiet)) {
-                        kolejkaDoTunelu.push_back(pakiet.proc_id); // rezygnuje z zapisaywanie proc_zegar
-                        debug("[TEST] No co Pan sie wpycha");
+                        kolejkaDoTunelu.push_back(pakiet.proc_id);
+                        debug("No co Pan sie wpycha");
                     }
-                //    MPI_SendLocal(PRZEKAZ_ACK);
                     pthread_cond_broadcast(&PRZEKAZ_ACK);
+                    debug("[KOM] Przekazałem ACK do watku_glownego");
                 }
                 break;
             case STOP:
-                debug("Otrzymałem stop od id_proc %d", pakiet.proc_id);
-                debug("[KOM] Otrzymałem STOP. Aktualny zegar: %d", zegar);
-                //zwolnij pamiec, zabij procesy
+                debug("[KOM] Otrzymałem STOP od %d. Aktualny zegar: %d", pakiet.proc_id, zegar);
                 dontStop = false;
-                terminate(); //todo remove?
+                terminate(); // potrzebne?
                 break;
             default:
                 debug("[KOM] Otrzymalem błędny komunikat o tagu %d", status.MPI_TAG);
@@ -95,19 +89,18 @@ void MPI_Broadcast(int nr_tunelu, kierunki gdzie, int zapisanyZegar, komunikat k
     for (int i = 0; i < LICZBA_EKIP; i++) {
         if (i != id_proc) {
             MPI_Send(&pakiet_, sizeof(packet_t), MPI_BYTE, i, komunikat, MPI_COMM_WORLD);
-            // debug("MPIBroadcast SEND to process %d", i);
         }
     }
 }
 // Sendlocal do wymiany na pthread_cond_wait
-void MPI_SendLocal(komunikat komunikat) {
-    MPI_Send(0, sizeof(int), MPI_INT, id_proc, komunikat, MPI_COMM_WORLD); //ID_WATKU_KOM
-}
+// void MPI_SendLocal(komunikat komunikat) {
+//     MPI_Send(0, sizeof(int), MPI_INT, id_proc, komunikat, MPI_COMM_WORLD); //ID_WATKU_KOM
+// }
 
-void MPI_RecvLocal(komunikat komunikat) {
-    MPI_Status status_;
-    int signal;
-    debug("TEST id watku kom %d Recv Local ?", ID_WATKU_KOM);
-    MPI_Recv(&signal, sizeof(int), MPI_INT, id_proc, komunikat, MPI_COMM_WORLD, &status_); //ID_WATKU_KOM
-    debug("TEST RecvLocal OK");
-}
+// void MPI_RecvLocal(komunikat komunikat) {
+//     MPI_Status status_;
+//     int signal;
+//     debug("TEST id watku kom %d Recv Local ?", ID_WATKU_KOM);
+//     MPI_Recv(&signal, sizeof(int), MPI_INT, id_proc, komunikat, MPI_COMM_WORLD, &status_); //ID_WATKU_KOM
+//     debug("TEST RecvLocal OK");
+// }

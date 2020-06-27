@@ -25,10 +25,10 @@ void mainLoop() {
     przejdzTunelem(wybranyKierunek);
     krainaSzczesliwosci();
     MPI_Barrier(MPI_COMM_WORLD);
-    // wybranyKierunek = zPowrotem;
-    // czekajNaWejscie(wybranyKierunek);
-    // przejdzTunelem(wybranyKierunek);
-    // dojdzDoSiebie();
+    wybranyKierunek = zPowrotem;
+    czekajNaWejscie(wybranyKierunek);
+    przejdzTunelem(wybranyKierunek);
+    dojdzDoSiebie();
 }
 
 void czekajNaWejscie(kierunki gdzie) {
@@ -40,10 +40,8 @@ void czekajNaWejscie(kierunki gdzie) {
     wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     stanWatku = czekamNaRelease;
     zwiekszZegar();
-    // debug("Stan zegara: %d",zegar);
     while /* nie ma miejsca */(wybranyTunel == -1) {
         debug("Nie ma dla mnie tunelu, czekam az ktos wyjdzie");
-        // MPI_RecvLocal(PRZEKAZ_RELEASE);
         ret = pthread_cond_wait(&PRZEKAZ_RELEASE, &mutex);
         debug("Ktos wyszedl, sprawdze miejsce");
         wybranyTunel = znajdzMiejsceWTunelu(gdzie);
@@ -51,24 +49,21 @@ void czekajNaWejscie(kierunki gdzie) {
     stanWatku = ide;
     
     /* Rozglaszam gdzie chcę sie dostać i zbieram odpowiedzi */
-    debug("Oglaszam, ze chce do tunelu %d", wybranyTunel);
+    debug("Oglaszam, ze chce do tunelu %d, zapisany zegar: %d", wybranyTunel, zapisanyZegar);
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
-    
-    debug("[TEST] oczekujace: %d", oczekujace);
 
     kolejkaDoTunelu.clear();
     stanWatku = czekamNaAck;
+    debug("Liczba oczekujacych: %d", oczekujace);
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
-        // MPI_RecvLocal(PRZEKAZ_ACK);
         ret = pthread_cond_wait(&PRZEKAZ_ACK, &mutex);
-        debug("TEST Dostalem ACK lokalne");
+        debug("Dostałem ACK numer %d/%d", i, oczekujace);
     }
 
     /* Czekam az bede mial pierwszenstwo */
-    stanWatku = czekamNaInside; //te moglyby byc atomowe
+    stanWatku = czekamNaInside; 
     while(!kolejkaDoTunelu.empty()) {
         debug("Czekam w kolejce do tunelu %d", wybranyTunel);
-        // MPI_RecvLocal(PRZEKAZ_INSIDE);
         ret = pthread_cond_wait(&PRZEKAZ_INSIDE, &mutex);
     }
     stanWatku = ide;
@@ -77,7 +72,6 @@ void czekajNaWejscie(kierunki gdzie) {
     stanWatku = czekamNaRelease;
     while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
         debug("Czekam na miejsce w tunelu %d", wybranyTunel);
-        // MPI_RecvLocal(PRZEKAZ_RELEASE);
         ret = pthread_cond_wait(&PRZEKAZ_RELEASE, &mutex);
     }
     stanWatku = ide;
@@ -85,47 +79,37 @@ void czekajNaWejscie(kierunki gdzie) {
 
 void przejdzTunelem(kierunki gdzie) {
     zwiekszZegar();
-    debug("Stan zegara: %d",zegar);
     stanBogacza = ide;
-    debug("JESTEM W TUNELU %d do %d", wybranyTunel, wybranyKierunek); 
-    zapisanyZegar = zegar; // czemu to służyło?
+    debug("JESTEM W TUNELU %d do %d zegar %d", wybranyTunel, wybranyKierunek, zegar); 
+    zapisanyZegar = zegar; // czemu to służyło? - w sumie zegar nie jest chyba istotny przy INSIDE
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
-
-    // mySleep(100000000);
 
     debug("Zaraz sprawdze czy moge wyjsc");
     while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
-        stanWatku = czekamNaRelease;
+        stanWatku = czekamNaRelease; // pozbyc sie + w kom
         debug("Jeszcze nie moge wyjsc");
-        // MPI_RecvLocal(PRZEKAZ_RELEASE);
         ret = pthread_cond_wait(&PRZEKAZ_RELEASE, &mutex);
     }
-    debug("moge wyjsc, ide!");
+    debug("Moge wyjsc, ide!");
 
-    if (kolejkaDoTunelu.empty()) {
-        debug("Koleka jest pusta");
-    } else {
-     debug("Liczba w kolejce %ld", kolejkaDoTunelu.size());
-    }
     stanWatku = ide;
 
     MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);  
 }
 
-#include <unistd.h>
+// #include <unistd.h>
 void krainaSzczesliwosci() {
     zwiekszZegar();
-    debug("Stan zegara: %d",zegar);
-    debug("Jestem w krainie szczesliwosci");
-   // sleep(100000);
+    debug("Jestem w krainie szczesliwosci! Zegar: %d", zegar);
+    sleep(5);
     debug("Koniec spanka");
 }
 
 void dojdzDoSiebie() {
     zwiekszZegar();
-    debug("Stan zegara: %d",zegar);
-    debug("Dochodze do siebie");
+    debug("Dochodze do siebie... zegar: %d", zegar);
     sleep(5);
+    debug("Koniec spanka, chce do krainy");
 }
 
 
