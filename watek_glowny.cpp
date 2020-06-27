@@ -89,13 +89,15 @@ void przejdzTunelem(kierunki gdzie) {
     stanBogacza = ide;
     debug("JESTEM W TUNELU %d do %d zegar %d", wybranyTunel, wybranyKierunek, zegar); 
     MPI_Broadcast(wybranyTunel, gdzie, zegar, INSIDE);
+    dodajSiebieDoTunelu(wybranyTunel);
     sleep(2);
     stanWatku = czekamNaRelease;
     debug("Zaraz sprawdze czy moge wyjsc");
-    while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
+    while(!czyJestemPierwszyWTunelu(wybranyTunel)) {
         debug("Jeszcze nie moge wyjsc");
         ret = pthread_cond_wait(&PRZEKAZ_RELEASE, &mutex);
     }
+    kolejkaWTuneluPopFront(wybranyTunel, id_proc);
     stanWatku = ide;
     debug("Moge wyjsc, ide!");
     MPI_Broadcast(wybranyTunel, gdzie, zegar,RELEASE);  

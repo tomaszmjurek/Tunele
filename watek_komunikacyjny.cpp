@@ -34,9 +34,9 @@ void *startWatekKom(void *ptr) {
                 tunele[pakiet.nr_tunelu].kolejkaWTunelu.push_back(pakiet.proc_id);
                 // todo: prawdopodobnie stanyWatku beda zbedne dzieki cond_broadcast
                 if (stanWatku == czekamNaInside) {
-                   debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
+                //    debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
-                   debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
+                //    debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
                    pthread_cond_broadcast(&PRZEKAZ_INSIDE);
                    debug("[KOM] Przekazalem INSIDE do watku_glownego");
                 }
@@ -92,15 +92,3 @@ void MPI_Broadcast(int nr_tunelu, kierunki gdzie, int zapisanyZegar, komunikat k
         }
     }
 }
-// Sendlocal do wymiany na pthread_cond_wait
-// void MPI_SendLocal(komunikat komunikat) {
-//     MPI_Send(0, sizeof(int), MPI_INT, id_proc, komunikat, MPI_COMM_WORLD); //ID_WATKU_KOM
-// }
-
-// void MPI_RecvLocal(komunikat komunikat) {
-//     MPI_Status status_;
-//     int signal;
-//     debug("TEST id watku kom %d Recv Local ?", ID_WATKU_KOM);
-//     MPI_Recv(&signal, sizeof(int), MPI_INT, id_proc, komunikat, MPI_COMM_WORLD, &status_); //ID_WATKU_KOM
-//     debug("TEST RecvLocal OK");
-// }

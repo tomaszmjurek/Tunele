@@ -14,13 +14,12 @@ class Tunel {
         kierunki kierunek;
         vector<int> kolejkaWTunelu;
 };
-// extern vector<int> kolejkaWTunelu[5] = {};//trzeba wykombinowac cos z tym argumentem, nie moze byc LICZBA_TUNELi, ale musi byc liczba tuneli XD
 
 extern Tunel * tunele;
-// extern volatile vector<int> kolejkaDoTunelu;
 
 void kolejkaWTuneluPopFront(int nrTunelu, int obcy_proc_id);
-
 void sprawdzCzyPierwszy(packet_t pakiet);
+void dodajSiebieDoTunelu(int nrTunelu);
+bool czyJestemPierwszyWTunelu(int nrTunelu);
 
 #endif

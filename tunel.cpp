@@ -66,3 +66,12 @@ void kolejkaWTuneluPopFront(int nrTunelu, int obcy_proc_id) {
     }
 }
 
+
+void dodajSiebieDoTunelu(int nrTunelu) {
+    tunele[nrTunelu].kolejkaWTunelu.push_back(id_proc);
+}
+
+bool czyJestemPierwszyWTunelu(int nrTunelu) {
+    return tunele[nrTunelu].kolejkaWTunelu.at(0) == id_proc;
+}
+
