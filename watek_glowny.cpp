@@ -90,15 +90,14 @@ void przejdzTunelem(kierunki gdzie) {
     debug("JESTEM W TUNELU %d do %d zegar %d", wybranyTunel, wybranyKierunek, zegar); 
     MPI_Broadcast(wybranyTunel, gdzie, zegar, INSIDE);
     sleep(5);
+    stanWatku = czekamNaRelease;
     debug("Zaraz sprawdze czy moge wyjsc");
     while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
-        stanWatku = czekamNaRelease; // pozbyc sie + w kom
         debug("Jeszcze nie moge wyjsc");
         ret = pthread_cond_wait(&PRZEKAZ_RELEASE, &mutex);
     }
-    debug("Moge wyjsc, ide!");
-
     stanWatku = ide;
+    debug("Moge wyjsc, ide!");
     MPI_Broadcast(wybranyTunel, gdzie, zegar,RELEASE);  
 }
 
