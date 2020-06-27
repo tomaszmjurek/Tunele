@@ -90,7 +90,7 @@ void przejdzTunelem(kierunki gdzie) {
     debug("JESTEM W TUNELU %d do %d zegar %d", wybranyTunel, wybranyKierunek, zegar); 
     zapisanyZegar = zegar; // czemu to służyło? - w sumie zegar nie jest chyba istotny przy INSIDE
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
-
+    sleep(3);
     debug("Zaraz sprawdze czy moge wyjsc");
     while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
         stanWatku = czekamNaRelease; // pozbyc sie + w kom
@@ -108,7 +108,7 @@ void przejdzTunelem(kierunki gdzie) {
 void krainaSzczesliwosci() {
     zwiekszZegar();
     debug("Jestem w krainie szczesliwosci! Zegar: %d", zegar);
-    sleep(100000);
+    sleep(5);
 }
 
 void dojdzDoSiebie() {
