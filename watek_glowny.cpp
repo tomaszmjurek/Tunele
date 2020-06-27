@@ -20,15 +20,17 @@ packet_t pakiet_glowny;
 int ret; // kody od pthread_cond_wait
 
 void mainLoop() {
-    wybranyKierunek = tam;
-    czekajNaWejscie(wybranyKierunek);
-    przejdzTunelem(wybranyKierunek);
-    krainaSzczesliwosci();
-    MPI_Barrier(MPI_COMM_WORLD);
-    wybranyKierunek = zPowrotem;
-    czekajNaWejscie(wybranyKierunek);
-    przejdzTunelem(wybranyKierunek);
-    dojdzDoSiebie();
+    while (true) {
+        wybranyKierunek = tam;
+        czekajNaWejscie(wybranyKierunek);
+        przejdzTunelem(wybranyKierunek);
+        krainaSzczesliwosci();
+        MPI_Barrier(MPI_COMM_WORLD);
+        wybranyKierunek = zPowrotem;
+        czekajNaWejscie(wybranyKierunek);
+        przejdzTunelem(wybranyKierunek);
+        dojdzDoSiebie();
+    }
 }
 
 void czekajNaWejscie(kierunki gdzie) {
@@ -54,10 +56,10 @@ void czekajNaWejscie(kierunki gdzie) {
 
     kolejkaDoTunelu.clear();
     stanWatku = czekamNaAck;
-    debug("Liczba oczekujacych: %d", oczekujace);
+    debug("Liczba wszystkich oczekujacych: %d", oczekujace);
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
         ret = pthread_cond_wait(&PRZEKAZ_ACK, &mutex);
-        debug("Dostałem ACK numer %d/%d", i, oczekujace);
+        debug("Dostałem ACK numer %d/%d", i+1, oczekujace);
     }
 
     /* Czekam az bede mial pierwszenstwo */

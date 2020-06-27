@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int oczekujace = 0;
+int oczekujace;
 bool dontStop = true;
 
 packet_t pakiet;
@@ -33,7 +33,7 @@ void *startWatekKom(void *ptr) {
                 oczekujace--;
                 tunele[pakiet.nr_tunelu].kolejkaWTunelu.push_back(pakiet.proc_id);
                 // todo: prawdopodobnie stanyWatku beda zbedne dzieki cond_broadcast
-                if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
+                if (stanWatku == czekamNaInside) {
                    debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
                    debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
