@@ -58,11 +58,11 @@ void czekajNaWejscie(kierunki gdzie) {
     kolejkaDoTunelu.clear();
     stanWatku = czekamNaAck;
     debug("Liczba oczekujacych: %d", oczekujace);
-    oczekujace_lokalnie = oczekujace;
-    for /* Odczytaj ACK od oczekujacych */ (int i = 1; i <= oczekujace_lokalnie; i++) {
+    // oczekujace_lokalnie = oczekujace;
+    for /* Odczytaj ACK od oczekujacych */ (int i = 1; i <= oczekujace; i++) {
         debug("Czekam na ACK");
         ret = pthread_cond_wait(&PRZEKAZ_ACK, &mutex);
-        debug("Dostałem ACK numer %d/%d", i, oczekujace_lokalnie);
+        debug("Dostałem ACK numer %d/%d", i, oczekujace);
     }
 
     /* Czekam az bede mial pierwszenstwo */
