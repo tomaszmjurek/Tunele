@@ -89,7 +89,7 @@ void przejdzTunelem(kierunki gdzie) {
     stanBogacza = ide;
     debug("JESTEM W TUNELU %d do %d zegar %d", wybranyTunel, wybranyKierunek, zegar); 
     MPI_Broadcast(wybranyTunel, gdzie, zegar, INSIDE);
-    sleep(5);
+    sleep(4);
     stanWatku = czekamNaRelease;
     debug("Zaraz sprawdze czy moge wyjsc");
     while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
@@ -105,13 +105,13 @@ void przejdzTunelem(kierunki gdzie) {
 void krainaSzczesliwosci() {
     zwiekszZegar();
     debug("Jestem w krainie szczesliwosci! Zegar: %d", zegar);
-    sleep(6);
+    sleep(5);
 }
 
 void dojdzDoSiebie() {
     zwiekszZegar();
     debug("Dochodze do siebie... zegar: %d", zegar);
-    sleep(6);
+    sleep(5);
     debug("Koniec spanka, chce do krainy");
 }
 
