@@ -51,11 +51,10 @@ void czekajNaWejscie(kierunki gdzie) {
     
     /* Rozglaszam gdzie chcę sie dostać i zbieram odpowiedzi */
     debug("Oglaszam, ze chce do tunelu %d, zapisany zegar: %d", wybranyTunel, zapisanyZegar);
-
-    MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
-
-    kolejkaDoTunelu.clear();
     stanWatku = czekamNaAck;
+    MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
+    kolejkaDoTunelu.clear();
+    
     debug("Liczba oczekujacych: %d", oczekujace);
     // oczekujace_lokalnie = oczekujace;
     for /* Odczytaj ACK od oczekujacych */ (int i = 1; i <= oczekujace; i++) {
