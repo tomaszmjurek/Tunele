@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int oczekujace;
+int oczekujace, przekazaneACK;
 bool dontStop = true;
 
 packet_t pakiet;
@@ -32,11 +32,8 @@ void *startWatekKom(void *ptr) {
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 oczekujace--;
                 tunele[pakiet.nr_tunelu].kolejkaWTunelu.push_back(pakiet.proc_id);
-                // todo: prawdopodobnie stanyWatku beda zbedne dzieki cond_broadcast
                 if (stanWatku == czekamNaInside) {
-                //    debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
-                //    debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); //todo remove
                    pthread_cond_broadcast(&PRZEKAZ_INSIDE);
                    debug("[KOM] Przekazalem INSIDE do watku_glownego");
                 }
@@ -58,6 +55,7 @@ void *startWatekKom(void *ptr) {
                         debug("Bogacz [%d] ma pierwszenstwo, bezczelny", pakiet.proc_id);
                     }
                     pthread_cond_broadcast(&PRZEKAZ_ACK);
+                    przekazaneACK++;
                     debug("[KOM] Przekazałem ACK do watku_glownego");
                 }
                 break;

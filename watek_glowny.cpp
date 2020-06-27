@@ -54,17 +54,17 @@ void czekajNaWejscie(kierunki gdzie) {
     stanWatku = czekamNaAck;
     MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, REQ);
     kolejkaDoTunelu.clear();
+    przekazaneACK = 0;
     
     debug("Liczba oczekujacych: %d", oczekujace);
     // oczekujace_lokalnie = oczekujace;
-    for /* Odczytaj ACK od oczekujacych */ (int i = 1; i <= oczekujace; i++) {
+    for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
         debug("Czekam na ACK");
         ret = pthread_cond_wait(&PRZEKAZ_ACK, &mutex);
-        debug("Dostałem ACK numer %d/%d", i, oczekujace);
+        debug("Dostałem %d ACK iteracja %d/%d", przekazaneACK, i+1, oczekujace);
     }
 
     /* Czekam az bede mial pierwszenstwo */
-    
     stanWatku = czekamNaInside; 
     while(!kolejkaDoTunelu.empty()) {
         debug("Czekam w kolejce do tunelu %d", wybranyTunel);
