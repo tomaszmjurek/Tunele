@@ -16,9 +16,12 @@ int znajdzMiejsceWTunelu(kierunki gdzie) {
             return nrTunelu;
     for (int i = 0; i < LICZBA_TUNELI; i++) {
         nrTunelu = i;
-        if (tunele[nrTunelu].kierunek == brak || tunele[nrTunelu].kierunek == gdzie)
-            if (tunele[nrTunelu].zajetosc < POJEMNOSC_TUNELU)
+        if (tunele[nrTunelu].kierunek == brak || tunele[nrTunelu].kierunek == gdzie){
+            if (tunele[nrTunelu].zajetosc  + ROZMIAR_EKIPY <= POJEMNOSC_TUNELU)
                 return nrTunelu;
+        }else{
+            debug("Nie mogę wybrać tunelu! Tunel %d jest ustawiony jako %d",nrTunelu,tunele[nrTunelu].kierunek);
+        }
     }
     return -1;
 }
@@ -35,7 +38,7 @@ bool sprawdzMiejsceWTunelu(int nrTunelu, kierunki gdzie) {
 }
 
 void dodajDoTunelu(int nrTunelu, int rozmiarEkipy, kierunki gdzie) {
-    if (tunele[nrTunelu].zajetosc + rozmiarEkipy < POJEMNOSC_TUNELU)
+    if (tunele[nrTunelu].zajetosc + rozmiarEkipy <= POJEMNOSC_TUNELU)
         tunele[nrTunelu].zajetosc += rozmiarEkipy;
     
     if (tunele[nrTunelu].kierunek == brak)
