@@ -60,7 +60,7 @@ void czekajNaWejscie(kierunki gdzie) {
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
         debug("Czekam na ACK");
         ret = pthread_cond_wait(&PRZEKAZ_ACK, &mutex);
-        debug("Dostałem %d ACK iteracja %d/%d", przekazaneACK, i+1, oczekujace);
+        debug("Dostałem ACK iteracja %d/%d", i+1, oczekujace);
     }
 
     /* Czekam az bede mial pierwszenstwo */
@@ -123,12 +123,13 @@ void obsluzKolejkeDoTunelu(int obcy_proc_id) {
         /* pop_front */
         kolejkaDoTunelu.front() = std::move(kolejkaDoTunelu.back());
         kolejkaDoTunelu.pop_back();
+    }
 }
 
 bool obcyMaPierwszenstwo(packet_t pakiet_) {
     return pakiet_.proc_zegar > zapisanyZegar || (pakiet_.proc_zegar == zapisanyZegar && pakiet_.proc_id < id_proc);
 }
 
-void zwiekszZegar(){
+void zwiekszZegar() {
     zegar++;
 }
