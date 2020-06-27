@@ -50,9 +50,8 @@ int main(int argc, char *argv[]) {
     ROZMIAR_EKIPY = rand() % 21 + 10;
 
     if (POJEMNOSC_TUNELU < ROZMIAR_EKIPY) {
-        debug("Pojemność tunelu za mała, zalecane 30-70");
-        finalizuj();
-        return 1;
+        debug("Pojemność tunelu za mała, zmieniam na 30");
+        POJEMNOSC_TUNELU = 30;
     }
 
     debug("Bogacz [%d] gotowy! Tunele: %d, Pojemnosc po: %d, Ekipy: %d,  Moja ekipa: %d", 
