@@ -88,9 +88,8 @@ void przejdzTunelem(kierunki gdzie) {
     zwiekszZegar();
     stanBogacza = ide;
     debug("JESTEM W TUNELU %d do %d zegar %d", wybranyTunel, wybranyKierunek, zegar); 
-    zapisanyZegar = zegar; // czemu to służyło? - w sumie zegar nie jest chyba istotny przy INSIDE
-    MPI_Broadcast(wybranyTunel, gdzie, zapisanyZegar, INSIDE);
-    sleep(3);
+    MPI_Broadcast(wybranyTunel, gdzie, zegar, INSIDE);
+    sleep(5);
     debug("Zaraz sprawdze czy moge wyjsc");
     while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
         stanWatku = czekamNaRelease; // pozbyc sie + w kom
@@ -100,21 +99,20 @@ void przejdzTunelem(kierunki gdzie) {
     debug("Moge wyjsc, ide!");
 
     stanWatku = ide;
-
-    MPI_Broadcast(wybranyTunel,gdzie,zapisanyZegar,RELEASE);  
+    MPI_Broadcast(wybranyTunel, gdzie, zegar,RELEASE);  
 }
 
 // #include <unistd.h>
 void krainaSzczesliwosci() {
     zwiekszZegar();
     debug("Jestem w krainie szczesliwosci! Zegar: %d", zegar);
-    sleep(5);
+    sleep(6);
 }
 
 void dojdzDoSiebie() {
     zwiekszZegar();
     debug("Dochodze do siebie... zegar: %d", zegar);
-    sleep(5);
+    sleep(6);
     debug("Koniec spanka, chce do krainy");
 }
 
