@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <mpi.h>
 #include <pthread.h>
+#include <cstdlib>
+#include <time.h>
 
 enum komunikat {REQ, ACK, INSIDE, RELEASE, STOP};
 enum stany {czekamNaTunel, ide, czekamNaRelease, czekamNaInside, czekamNaAck};

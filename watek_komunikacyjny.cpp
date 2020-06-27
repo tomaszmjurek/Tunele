@@ -3,6 +3,8 @@
 #include "watek_glowny.h"
 #include "tunel.h"
 #include <string>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -55,6 +57,7 @@ void *startWatekKom(void *ptr) {
                         debug("Bogacz [%d] ma pierwszenstwo, bezczelny", pakiet.proc_id);
                     }
                     pthread_cond_broadcast(&PRZEKAZ_ACK);
+                    this_thread::sleep_for(chrono::milliseconds(50));
                     przekazaneACK++;
                     debug("[KOM] Przekazałem ACK do watku_glownego");
                 }
