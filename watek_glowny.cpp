@@ -25,7 +25,6 @@ void mainLoop() {
         czekajNaWejscie(wybranyKierunek);
         przejdzTunelem(wybranyKierunek);
         krainaSzczesliwosci();
-        MPI_Barrier(MPI_COMM_WORLD);
         wybranyKierunek = zPowrotem;
         czekajNaWejscie(wybranyKierunek);
         przejdzTunelem(wybranyKierunek);

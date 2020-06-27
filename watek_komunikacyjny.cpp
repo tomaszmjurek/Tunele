@@ -55,7 +55,7 @@ void *startWatekKom(void *ptr) {
                 if (stanWatku == czekamNaAck) {
                     if (pakiet.nr_tunelu == wybranyTunel && obcyMaPierwszenstwo(pakiet)) {
                         kolejkaDoTunelu.push_back(pakiet.proc_id);
-                        debug("No co Pan sie wpycha");
+                        debug("Bogacz [%d] ma pierwszenstwo, bezczelny", pakiet.proc_id);
                     }
                     pthread_cond_broadcast(&PRZEKAZ_ACK);
                     debug("[KOM] Przekazałem ACK do watku_glownego");
