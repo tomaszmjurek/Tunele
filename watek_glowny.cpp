@@ -18,7 +18,7 @@ kierunki wybranyKierunek = brak;
 packet_t pakiet_glowny;
 
 int ret; // kody od pthread_cond_wait
-
+int oczekujace_lokalnie;
 void mainLoop() {
     while(1){
     wybranyKierunek = tam;
@@ -57,17 +57,21 @@ void czekajNaWejscie(kierunki gdzie) {
     kolejkaDoTunelu.clear();
     stanWatku = czekamNaAck;
     debug("Liczba oczekujacych: %d", oczekujace);
-    for /* Odczytaj ACK od oczekujacych */ (int i = 1; i <= oczekujace; i++) {
+    oczekujace_lokalnie = oczekujace;
+    for /* Odczytaj ACK od oczekujacych */ (int i = 1; i <= oczekujace_lokalnie; i++) {
+        debug("Czekam na ACK");
         ret = pthread_cond_wait(&PRZEKAZ_ACK, &mutex);
-        debug("Dostałem ACK numer %d/%d", i, oczekujace);
+        debug("Dostałem ACK numer %d/%d", i, oczekujace_lokalnie);
     }
 
     /* Czekam az bede mial pierwszenstwo */
+ 
     stanWatku = czekamNaInside; 
     while(!kolejkaDoTunelu.empty()) {
         debug("Czekam w kolejce do tunelu %d", wybranyTunel);
         ret = pthread_cond_wait(&PRZEKAZ_INSIDE, &mutex);
     }
+    
     stanWatku = ide;
 
     /* Czekam az bede mial miejsce */
