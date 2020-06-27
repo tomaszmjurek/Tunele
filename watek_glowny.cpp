@@ -103,8 +103,7 @@ void przejdzTunelem(kierunki gdzie) {
 void krainaSzczesliwosci() {
     zwiekszZegar();
     debug("Jestem w krainie szczesliwosci! Zegar: %d", zegar);
-    sleep(5);
-    debug("Koniec spanka");
+    sleep(100000);
 }
 
 void dojdzDoSiebie() {
