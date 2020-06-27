@@ -6,7 +6,7 @@
 #include <mpi.h>
 #include <pthread.h>
 
-enum komunikat {REQ, ACK, INSIDE, RELEASE, STOP, PRZEKAZ_INSIDE, PRZEKAZ_RELEASE, PRZEKAZ_ACK};
+enum komunikat {REQ, ACK, INSIDE, RELEASE, STOP};
 enum stany {czekamNaTunel, ide, czekamNaRelease, czekamNaInside, czekamNaAck};
 extern stany stanBogacza; // czekamNaTunel / ide
 extern stany stanWatku; // czekamNaRelease / czekamNaInside / ide

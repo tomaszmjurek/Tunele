@@ -12,7 +12,7 @@ packet_t pakiet; //czy nie zerowac regularnie
 
 void *startWatekKom(void *ptr) {
     debug("[KOM] Odbieranie komunikatów w gotowości");
-  //  int *sources[5] = {1, 2, 3, 4, 5};
+
     MPI_Status status;
     while (dontStop) {
         MPI_Recv(&pakiet, sizeof(packet_t), MPI_BYTE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -34,11 +34,13 @@ void *startWatekKom(void *ptr) {
                 dodajDoTunelu(pakiet.nr_tunelu, pakiet.rozmiar_grupy, pakiet.kierunek);
                 oczekujace--;
                 tunele[pakiet.nr_tunelu].kolejkaWTunelu.push_back(pakiet.proc_id);
+                // todo: prawdopodobnie stanyWatku beda zbedne dzieki cond_broadcast
                 if (stanBogacza == czekamNaTunel && stanWatku == czekamNaInside) {
                    debug("[KOM] Przed INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size()); 
                    obsluzKolejkeDoTunelu(pakiet.proc_id);
                    debug("[KOM] Po INSIDE Kolejka do tunelu ma rozmiar: %ld", kolejkaDoTunelu.size());
                 //   MPI_SendLocal(PRZEKAZ_INSIDE);
+                   pthread_cond_broadcast(&PRZEKAZ_INSIDE);
                    debug("[KOM] Przekazalem INSIDE do watku_glownego");
                 }
                 break;
@@ -48,6 +50,7 @@ void *startWatekKom(void *ptr) {
                 kolejkaWTuneluPopFront(pakiet.nr_tunelu, pakiet.proc_id);
                 if (stanWatku == czekamNaRelease) {
                 //    MPI_SendLocal(PRZEKAZ_RELEASE);
+                    pthread_cond_broadcast(&PRZEKAZ_RELEASE);
                     debug("[KOM] Przekazalem RELEASE do watku_glownego");
                 }
                 break;
@@ -59,6 +62,7 @@ void *startWatekKom(void *ptr) {
                         debug("[TEST] No co Pan sie wpycha");
                     }
                 //    MPI_SendLocal(PRZEKAZ_ACK);
+                    pthread_cond_broadcast(&PRZEKAZ_ACK);
                 }
                 break;
             case STOP:

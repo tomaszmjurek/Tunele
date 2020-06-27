@@ -89,6 +89,7 @@ int main(int argc, char *argv[]) {
     pthread_create(&watekKom, NULL, startWatekKom, 0);
 
     MPI_Barrier(MPI_COMM_WORLD);
+    
     mainLoop();
 
     finalizuj();

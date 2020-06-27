@@ -7,12 +7,17 @@
 #include <algorithm>
 
 MPI_Status status;
+int zapisanyZegar; 
+pthread_cond_t PRZEKAZ_RELEASE, PRZEKAZ_INSIDE, PRZEKAZ_ACK; // init
+pthread_mutex_t mutex; //init
+
 vector<int> kolejkaDoTunelu = {}; // wspoldzielenie?
 
-int zapisanyZegar;
 kierunki wybranyKierunek = brak;
 
 packet_t pakiet_glowny;
+
+int ret; // kody od pthread_cond_wait
 
 void mainLoop() {
     wybranyKierunek = tam;
@@ -28,19 +33,19 @@ void mainLoop() {
 
 void czekajNaWejscie(kierunki gdzie) {
     zapisanyZegar = zegar;
-
-    debug("Stan zegara: %d",zegar);
-
+    debug("Stan zegara: %d", zegar);
     stanBogacza = czekamNaTunel;
 
     /* Czekam az zwolni sie jakis tunel */
     wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     stanWatku = czekamNaRelease;
     zwiekszZegar();
-    debug("Stan zegara: %d",zegar);
+    // debug("Stan zegara: %d",zegar);
     while /* nie ma miejsca */(wybranyTunel == -1) {
         debug("Nie ma dla mnie tunelu, czekam az ktos wyjdzie");
-        MPI_RecvLocal(PRZEKAZ_RELEASE);
+        // MPI_RecvLocal(PRZEKAZ_RELEASE);
+        ret = pthread_cond_wait(&PRZEKAZ_RELEASE, &mutex);
+        debug("Ktos wyszedl, sprawdze miejsce");
         wybranyTunel = znajdzMiejsceWTunelu(gdzie);
     }
     stanWatku = ide;
@@ -54,7 +59,8 @@ void czekajNaWejscie(kierunki gdzie) {
     kolejkaDoTunelu.clear();
     stanWatku = czekamNaAck;
     for /* Odczytaj ACK od oczekujacych */ (int i = 0; i < oczekujace; i++) {
-        MPI_RecvLocal(PRZEKAZ_ACK);
+        // MPI_RecvLocal(PRZEKAZ_ACK);
+        ret = pthread_cond_wait(&PRZEKAZ_ACK, &mutex);
         debug("TEST Dostalem ACK lokalne");
     }
 
@@ -62,7 +68,8 @@ void czekajNaWejscie(kierunki gdzie) {
     stanWatku = czekamNaInside; //te moglyby byc atomowe
     while(!kolejkaDoTunelu.empty()) {
         debug("Czekam w kolejce do tunelu %d", wybranyTunel);
-        MPI_RecvLocal(PRZEKAZ_INSIDE);
+        // MPI_RecvLocal(PRZEKAZ_INSIDE);
+        ret = pthread_cond_wait(&PRZEKAZ_INSIDE, &mutex);
     }
     stanWatku = ide;
 
@@ -70,7 +77,8 @@ void czekajNaWejscie(kierunki gdzie) {
     stanWatku = czekamNaRelease;
     while(!sprawdzMiejsceWTunelu(wybranyTunel, gdzie)) {
         debug("Czekam na miejsce w tunelu %d", wybranyTunel);
-        MPI_RecvLocal(PRZEKAZ_RELEASE);
+        // MPI_RecvLocal(PRZEKAZ_RELEASE);
+        ret = pthread_cond_wait(&PRZEKAZ_RELEASE, &mutex);
     }
     stanWatku = ide;
 }
@@ -89,7 +97,8 @@ void przejdzTunelem(kierunki gdzie) {
     while(!tunele[wybranyTunel].kolejkaWTunelu.empty()){
         stanWatku = czekamNaRelease;
         debug("Jeszcze nie moge wyjsc");
-        MPI_RecvLocal(PRZEKAZ_RELEASE);
+        // MPI_RecvLocal(PRZEKAZ_RELEASE);
+        ret = pthread_cond_wait(&PRZEKAZ_RELEASE, &mutex);
     }
     debug("moge wyjsc, ide!");
 

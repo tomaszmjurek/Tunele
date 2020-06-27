@@ -20,4 +20,7 @@ extern int zapisanyZegar;//, wybranyTunel;
 extern kierunki wybranyKierunek; // czy bedzie widziany deklaracja poza main.h
 extern vector<int> kolejkaDoTunelu;
 
+extern pthread_cond_t PRZEKAZ_RELEASE, PRZEKAZ_INSIDE, PRZEKAZ_ACK;
+extern pthread_mutex_t mutex;
+
 #endif
